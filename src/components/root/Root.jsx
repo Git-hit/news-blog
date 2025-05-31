@@ -149,7 +149,7 @@ const Root = ({ mainNews }) => {
         {/* Right Side News */}
         <div className="space-y-5">
           {sideNews.length > 0 ? (
-            sideNews.map((item) => {
+            sideNews.slice(1, 5).map((item) => {
               const categoriesText = () => {
                 if (!item.categories) return "General";
                 try {

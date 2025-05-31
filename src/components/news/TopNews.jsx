@@ -60,9 +60,9 @@ const TopNews = ({ topNewsData, category }) => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold capitalize">{category.replace(/-/g, " ")}</h2>
-        <a href="#" className="text-sm text-red-600 font-medium hover:underline">
+        {/* <a href="#" className="text-sm text-red-600 font-medium hover:underline">
           See all →
-        </a>
+        </a> */}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

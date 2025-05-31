@@ -51,10 +51,10 @@ const LatestNews = ({ news }) => {
     <div className="px-5 lg:px-20 py-10">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Latest News</h2>
-        <div className="text-red-500 flex items-center cursor-pointer hover:underline">
+        {/* <div className="text-red-500 flex items-center cursor-pointer hover:underline">
           <span>See all</span>
           <ArrowRight className="ml-1 w-4 h-4" />
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

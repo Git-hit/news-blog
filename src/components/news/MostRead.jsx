@@ -64,9 +64,9 @@ const MostRead = ({ mostReadData, category }) => {
     <section className="max-w-7xl mx-auto px-4 py-10">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-gray-900">Most Read</h2>
-        <button className="text-red-500 text-sm font-medium hover:underline">
+        {/* <button className="text-red-500 text-sm font-medium hover:underline">
           See all
-        </button>
+        </button> */}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

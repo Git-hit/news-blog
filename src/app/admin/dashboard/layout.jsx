@@ -9,6 +9,7 @@ const navItems = [
   { label: "Dashboard", href: "/admin/dashboard" },
   { label: "Posts", href: "/admin/dashboard/posts" },
   { label: "Notifications", href: "/admin/dashboard/notifications" },
+  { label: "Footer Settings", href: "/admin/dashboard/footer" },
 ];
 
 export default function DashboardLayout({ children }) {

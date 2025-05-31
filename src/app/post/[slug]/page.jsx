@@ -73,7 +73,7 @@ export default async function Post({ params }) {
       ) : (
         <div>
           <Navbar posts={news} />
-          <TopIndex />
+          {/* <TopIndex /> */}
           <PostViewCounter slug={awaitedParams.slug} />
           <BlogPage
             title={postData.title}

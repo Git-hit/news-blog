@@ -86,10 +86,10 @@ const WeeklyHighlight = () => {
       {/* Header */}
       <div className='flex justify-between items-center mb-4'>
         <h2 className='text-xl font-bold'>Weekly Highlight</h2>
-        <div className='flex items-center text-red-600 font-semibold cursor-pointer'>
+        {/* <div className='flex items-center text-red-600 font-semibold cursor-pointer'>
           <span>See all</span>
           <ArrowRight className='ml-1 w-4 h-4' />
-        </div>
+        </div> */}
       </div>
 
       {/* Highlights Grid */}
