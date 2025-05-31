@@ -3,21 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-interface Post {
-  id: number;
-  title: string;
-  image: string;
-  created_at: string;
-  category: string;
-  read_time: string;
-}
-
-interface UpnextProps {
-  posts: Post[];
-  category: string;
-}
-
-const Upnext: React.FC<UpnextProps> = ({ posts, category }) => {
+const Upnext = ({ posts, category }) => {
   const router = useRouter();
 
   const filteredPosts = posts
