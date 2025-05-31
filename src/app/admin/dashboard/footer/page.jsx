@@ -10,13 +10,14 @@ export default function AdminFooterSettings() {
   const [loadingSections, setLoadingSections] = useState(false);
 
   useEffect(() => {
+    document.title = "Footer Settings";
     async function getSections() {
       setLoadingSections(true);
       axios.defaults.withCredentials = true;
       axios.defaults.withXSRFToken = true;
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
+      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
       await axios
-        .get("http://localhost:8000/api/footer-settings")
+        .get(`${process.env.API_URL}/api/footer-settings`)
         .then((res) => {
           setSections(res.data?.sections || []);
         });
@@ -39,8 +40,8 @@ export default function AdminFooterSettings() {
     setMessage("");
     setLoading(true);
     try {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-      await axios.post("http://localhost:8000/api/footer-settings", {
+      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
+      await axios.post(`${process.env.API_URL}/api/footer-settings`, {
         sections,
       });
       setMessage("Footer saved!");

@@ -11,12 +11,14 @@ export default function PostsPage() {
   useEffect(() => {
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
+
+    document.title = "All Post";
   }, []);
 
   const fetchPosts = async () => {
     try {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-      const res = await axios.get("http://localhost:8000/api/posts");
+      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
+      const res = await axios.get(`${process.env.API_URL}/api/posts`);
       setPosts(res.data); // Adjust based on your API response
     } catch (err) {
       console.error("Failed to fetch posts", err);
@@ -29,8 +31,8 @@ export default function PostsPage() {
     if (!confirm("Are you sure you want to delete this post?")) return;
 
     try {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-      await axios.delete(`http://localhost:8000/api/posts/${id}`);
+      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
+      await axios.delete(`${process.env.API_URL}/api/posts/${id}`);
       setPosts(posts.filter((post) => post.id !== id));
     } catch (err) {
       console.error("Delete failed", err);

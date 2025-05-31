@@ -1,4 +1,8 @@
-export default function TermsOfService() {
+export const metadata = {
+  title: "Terms of Service | Daily Trend News",
+};
+
+export default async function TermsOfService() {
   return (
     <main className="max-w-4xl mx-auto py-12 px-6 space-y-6">
       <h1 className="text-3xl font-bold">Terms of Service</h1>

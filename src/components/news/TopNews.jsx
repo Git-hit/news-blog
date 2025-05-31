@@ -69,7 +69,7 @@ const TopNews = ({ topNewsData, category }) => {
         {/* Main Story */}
         <div onClick={() => router.push(`/post/${mainStory.slug}`)} className="cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm">
           <Image
-            src={`http://localhost:8000/storage/${mainStory.image}`}
+            src={`${process.env.API_URL}/storage/${mainStory.image}`}
             alt={mainStory.title}
             width={800}
             height={400}
@@ -92,7 +92,7 @@ const TopNews = ({ topNewsData, category }) => {
           {sideStories.map((item) => (
             <div onClick={() => router.push(`/post/${item.slug}`)} key={item.id} className="cursor-pointer flex items-start space-x-4">
               <Image
-                src={`http://localhost:8000/storage/${item.image}`}
+                src={`${process.env.API_URL}/storage/${item.image}`}
                 alt={item.title}
                 width={100}
                 height={100}

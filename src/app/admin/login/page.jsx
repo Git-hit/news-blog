@@ -10,7 +10,7 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.title = "Admin Login";
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
   }, [])
@@ -22,13 +22,13 @@ export default function AdminLogin() {
 
   try {
     // First get CSRF cookie
-    await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
+    await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`, {
       withCredentials: true,
     });
 
     // Then post login data
     const res = await axios.post(
-      'http://localhost:8000/login',
+      `${process.env.API_URL}/login`,
       { email, password },
       { withCredentials: true }
     );

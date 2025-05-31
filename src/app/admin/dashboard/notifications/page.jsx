@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.API_URL;
 
 export default function NotificationsManager() {
   const [notifications, setNotifications] = useState([]);
@@ -15,6 +15,7 @@ export default function NotificationsManager() {
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
+    document.title = "Notifications Settings";
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
   }, [])

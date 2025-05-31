@@ -138,7 +138,7 @@ const Navbar = ({ posts }) => {
                       className='flex items-center p-2 space-x-3 hover:bg-gray-100 transition'>
                       <div className='w-12 h-12 flex-shrink-0'>
                         <Image
-                          src={`http://localhost:8000/storage/${item.image}`}
+                          src={`${process.env.API_URL}/storage/${item.image}`}
                           alt={item.title}
                           width={48}
                           height={48}
@@ -211,7 +211,7 @@ const Navbar = ({ posts }) => {
                     className='flex items-center p-2 space-x-3 hover:bg-gray-100 transition'>
                     <div className='w-12 h-12 flex-shrink-0'>
                       <Image
-                        src={`http://localhost:8000/storage/${item.image}`}
+                        src={`${process.env.API_URL}/storage/${item.image}`}
                         alt={item.title}
                         width={48}
                         height={48}

@@ -10,11 +10,12 @@ export default function EditPostPage() {
   const [post, setPost] = useState(null);
 
   useEffect(() => {
+    document.title = "Edit Post";
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
     async function fetchPost() {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-      const res = await axios.get(`http://localhost:8000/api/posts/${id}`);
+      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
+      const res = await axios.get(`${process.env.API_URL}/api/posts/${id}`);
       setPost(res.data.post);
     }
     fetchPost();

@@ -14,7 +14,7 @@ export default function CategorySelector({
   // 🔒 Fetch categories using token
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/categories", {
+      .get(`${process.env.API_URL}/api/categories`, {
         withCredentials: true,
       })
       .then((res) => setCategories(res.data))
@@ -44,9 +44,9 @@ export default function CategorySelector({
     setCreatingNewCategory(true);
 
     try {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie"); // fetch XSRF cookie
+      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`); // fetch XSRF cookie
 
-      const res = await axios.post("http://localhost:8000/api/categories", {
+      const res = await axios.post(`${process.env.API_URL}/api/categories`, {
         name: newCategory,
       });
 

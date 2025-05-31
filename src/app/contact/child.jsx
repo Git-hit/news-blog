@@ -8,7 +8,7 @@ import NewsFooter from "../../components/Footer/Footer";
 export default function Child() {
   const [news, setNews] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:8000/api/news")
+    fetch(`${process.env.API_URL}/api/news`)
       .then((res) => res.json())
       .then((data) => {
         setNews(data);
@@ -41,8 +41,8 @@ export default function Child() {
     try {
       axios.defaults.withCredentials = true;
       axios.defaults.withXSRFToken = true;
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-      await axios.post("http://localhost:8000/api/contact", formData);
+      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
+      await axios.post(`${process.env.API_URL}/api/contact`, formData);
       setStatus("success");
       setFormData({
         firstName: "",

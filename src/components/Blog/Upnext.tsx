@@ -69,7 +69,7 @@ const Upnext: React.FC<UpnextProps> = ({ posts, category }) => {
             </div>
             <div className="w-28 h-20 flex-shrink-0">
               <Image
-                src={`http://localhost:8000/storage/${post.image}`}
+                src={`${process.env.API_URL}/storage/${post.image}`}
                 alt={post.title}
                 width={112}
                 height={80}

@@ -6,29 +6,6 @@ import { DateTime } from "luxon";
 import { useRouter } from "next/navigation";
 
 const LatestNews = ({ news }) => {
-  // const [news, setNews] = useState(null); // null means loading
-
-  // useEffect(() => {
-  //   fetch("http://localhost:8000/api/news")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setNews(data);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to fetch news:", err);
-  //       setNews([]); // on error, empty array to stop spinner
-  //     });
-  // }, []);
-
-  // if (news === null) {
-  //   // Loading spinner centered
-  //   return (
-  //     <div className="flex justify-center items-center h-64">
-  //       <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-  //     </div>
-  //   );
-  // }
-
   const router = useRouter();
 
   // Sort by created_at descending and take top 3
@@ -81,7 +58,7 @@ const LatestNews = ({ news }) => {
             >
               {item.image ? (
                 <Image
-                  src={`http://localhost:8000/storage/${item.image}`}
+                  src={`${process.env.API_URL}/storage/${item.image}`}
                   alt={item.title}
                   width={500}
                   height={300}

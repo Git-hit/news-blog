@@ -1,4 +1,8 @@
-export default function PrivacyPolicy() {
+export const metadata = {
+  title: "Privacy Policy | Daily Trend News",
+};
+
+export default async function PrivacyPolicy() {
   return (
     <main className="max-w-4xl mx-auto py-12 px-6 space-y-6">
       <h1 className="text-3xl font-bold">Privacy Policy</h1>

@@ -22,56 +22,13 @@ const FeaturePostFinder = (data) => {
   return { hasFeatured: false, posts: sortedByCreatedAt.slice(0, 1) };
 };
 
-// const MainNews = [
-//   {
-//     id: 1,
-//     logo: "/logo.png",
-//     postedBy: "BBC News",
-//     posted: "13 mins ago",
-//     title: "People spend night on roofs and in trees after Ukraine dam breach",
-//     para: "Hundreds of thousands of people have been left without access to clean water since the breach of the Kakhovka dam.",
-//     postedOn: "Aug 03, 2023",
-//     backgroundImage: "/logo1.jpg",
-//     featured: false,
-//     created_at: "2023-08-03T10:00:00Z",
-//     image: "posts/ukraine-dam.webp",
-//   },
-//   {
-//     id: 2,
-//     logo: "/logo.png",
-//     postedBy: "CNN News",
-//     posted: "5 mins ago",
-//     title: "Turkish lira crashes as inflation surges",
-//     para: "Turkey’s currency continues its free fall amid inflation fears.",
-//     postedOn: "Aug 10, 2023",
-//     backgroundImage: "/logo1.jpg",
-//     featured: true,
-//     created_at: "2023-08-10T09:00:00Z",
-//     image: "posts/turkish-lira.webp",
-//   },
-// ];
-
 const Root = ({ mainNews }) => {
-  // console.log(mainNews)
-  // const [mainNews, setMainNews] = useState([]);
-
-  // useEffect(() => {
-  //   fetch("http://localhost:8000/api/news")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setMainNews(data);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to fetch news:", err);
-  //     });
-  // }, []);
-
   const router = useRouter();
 
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/notifications")
+    fetch(`${process.env.API_URL}/api/notifications`)
       .then((res) => res.json())
       .then((data) => {
         setNotifications(data);
@@ -124,7 +81,7 @@ const Root = ({ mainNews }) => {
               className="relative h-96 cursor-pointer rounded-lg overflow-hidden mb-6"
             >
               <Image
-                src={`http://localhost:8000/storage/${item.image}`}
+                src={`${process.env.API_URL}/storage/${item.image}`}
                 alt={item.title}
                 fill
                 className="object-cover"
@@ -172,7 +129,7 @@ const Root = ({ mainNews }) => {
                   <div className="cursor-pointer w-24 h-20 rounded-md overflow-hidden flex-shrink-0">
                     <Image
                       src={
-                        `http://localhost:8000/storage/${item.image}` ||
+                        `${process.env.API_URL}/storage/${item.image}` ||
                         "/logo1.jpg"
                       }
                       alt={item.title}

@@ -3,8 +3,8 @@ import axios from "axios";
 export async function GET() {
   try {
     const [postsRes, categoriesRes] = await Promise.all([
-      axios.get("http://localhost:8000/api/get-all-posts"),
-      axios.get("http://localhost:8000/api/get-all-categories"),
+      axios.get(`${process.env.API_URL}/api/get-all-posts`),
+      axios.get(`${process.env.API_URL}/api/get-all-categories`),
     ]);
 
     const posts = postsRes.data;

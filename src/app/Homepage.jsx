@@ -12,7 +12,7 @@ const Homepage = () => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:8000/api/news")
+    fetch(`${process.env.API_URL}/api/news`)
       .then((res) => res.json())
       .then((data) => {
         setNews(data);

@@ -24,58 +24,6 @@ const getDisplayPosts = (data) => {
 };
 
 const MustRead = ({ posts }) => {
-  // const [posts, setPosts] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   fetch("http://localhost:8000/api/news")
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error("Failed to fetch data");
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       const adaptedData = data.map((item) => ({
-  //         id: item.id,
-  //         image: item.image
-  //           ? `http://localhost:8000/storage/${item.image}`
-  //           : "/Logo1.jpg",
-  //         title: item.title,
-  //         author: item.author || item.postedBy || "Unknown",
-  //         timeAgo: item.created_at
-  //           ? DateTime.fromISO(item.created_at).toRelative()
-  //           : "1 hour ago",
-  //         description: item.meta_description || item.content || "",
-  //         // Parse categories JSON string and join all categories with commas
-  //         categories: (() => {
-  //           try {
-  //             const cats = JSON.parse(item.categories || "[]");
-  //             if (Array.isArray(cats)) return cats.join(", ");
-  //             return item.categories || "General";
-  //           } catch {
-  //             return item.categories || "General";
-  //           }
-  //         })(),
-  //         readTime: "3 min read", // no readTime field, fallback to default
-  //         mustRead: false, // no mustRead field in schema, default false
-  //       }));
-  //       setPosts(adaptedData);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       setError(err.message);
-  //       setLoading(false);
-  //     });
-  // }, []);
-
-  // if (loading) {
-  //   return <div className="p-4 text-center">Loading must-read news...</div>;
-  // }
-
-  // if (error) {
-  //   return <div className="p-4 text-center text-red-600">Error: {error}</div>;
-  // }
-
   const router = useRouter();
 
   if (!posts.length) {
@@ -111,7 +59,7 @@ const MustRead = ({ posts }) => {
         <div className="lg:col-span-2 cursor-pointer" onClick={() => router.push(`/post/${postsToDisplay[0].slug}`)}>
           <div className="rounded-lg overflow-hidden">
             <Image
-              src={`http://localhost:8000/storage/${postsToDisplay[0].image}`}
+              src={`${process.env.API_URL}/storage/${postsToDisplay[0].image}`}
               alt={postsToDisplay[0].title}
               width={600}
               height={400}
@@ -167,7 +115,7 @@ const MustRead = ({ posts }) => {
               <div onClick={() => router.push(`/post/${item.slug}`)} key={item.id} className="flex space-x-3 cursor-pointer">
                 <div className="w-28 h-20 overflow-hidden rounded-md flex-shrink-0">
                   <Image
-                    src={`http://localhost:8000/storage/${item.image}`}
+                    src={`${process.env.API_URL}/storage/${item.image}`}
                     alt={item.title}
                     width={112}
                     height={80}

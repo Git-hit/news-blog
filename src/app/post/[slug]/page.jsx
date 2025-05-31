@@ -58,7 +58,7 @@ export default async function Post({ params }) {
 
   let loading = true;
 
-  const response = await fetch("http://localhost:8000/api/news", {
+  const response = await fetch(`${process.env.API_URL}/api/news`, {
     cache: "no-store",
   });
   const news = await response.json();
