@@ -1,71 +1,76 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-interface UpNext {
+interface Post {
   id: number;
   title: string;
   image: string;
-  toRead: string;
+  created_at: string;
+  category: string;
+  read_time: string;
 }
 
-const UpNextData: UpNext[] = [
-  {
-    id: 1,
-    title: "Trump warns America’s businesses: Eat my tariffs, or pay the price",
-    image: "Logo1.jpg",
-    toRead: "4 minute read",
-  },
-  {
-    id: 2,
-    title: "Trump says the clock is ticking for 150 countries to make a deal or face higher tariffs",
-    image: "Logo1.jpg",
-    toRead: "5 minute read",
-  },
-  {
-    id: 3,
-    title: "Billionaires are turning on Trump",
-    image: "Logo1.jpg",
-    toRead: "4 minute read",
-  },
-  {
-    id: 4,
-    title:
-      "China tariffs are no longer 145%, but for small businesses in the crossfire, ‘it’s still awful’",
-    image: "Logo1.jpg",
-    toRead: "6 minute read",
-  },
-  {
-    id: 5,
-    title: "Regional tariffs could soon be the new ‘reciprocal’ tariff",
-    image: "Logo1.jpg",
-    toRead: "4 minute read",
-  },
-];
+interface UpnextProps {
+  posts: Post[];
+  category: string;
+}
 
-const Upnext = () => {
+const Upnext: React.FC<UpnextProps> = ({ posts, category }) => {
+  const router = useRouter();
+
+  const filteredPosts = posts
+    .filter((post) => post.category === category)
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+  const fallbackPosts = posts
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
+    .slice(0, 4);
+
+  const upNextPosts =
+    filteredPosts.length >= 4 ? filteredPosts.slice(0, 4) : fallbackPosts;
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       <h2 className="text-2xl font-bold mb-6">Up next</h2>
 
       <ul className="space-y-6">
-        {UpNextData.map((item, index) => (
+        {upNextPosts.map((post, index) => (
           <li
-            key={item.id}
+            onClick={() => {
+              const currentSlug = window.location.pathname.split("/").pop();
+              if (currentSlug === post.slug) {
+                // Navigate to the same slug: force reload
+                // router.replace(`/post/${post.slug}`); // Soft navigation
+                window.location.reload(); // Full reload to fetch new data
+              } else {
+                router.push(`/post/${post.slug}`);
+              }
+            }}
+            key={post.id}
             className={`flex justify-between gap-4 pb-4 ${
-              index !== UpNextData.length - 1 ? "border-b" : ""
+              index !== upNextPosts.length - 1 ? "border-b" : ""
             }`}
           >
             <div className="flex-1">
               <h3 className="text-base font-medium text-black hover:underline cursor-pointer">
-                {item.title}
+                {post.title}
               </h3>
-              <p className="text-sm text-gray-600 mt-1">{item.toRead}</p>
+              {/* <p className="text-sm text-gray-600 mt-1">
+                {post.read_time || "4 min read"}
+              </p> */}
             </div>
             <div className="w-28 h-20 flex-shrink-0">
               <Image
-                src={`/${item.image}`}
-                alt={item.title}
+                src={`http://localhost:8000/storage/${post.image}`}
+                alt={post.title}
                 width={112}
                 height={80}
                 className="w-full h-full object-cover rounded-md"

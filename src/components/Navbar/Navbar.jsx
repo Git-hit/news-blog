@@ -1,61 +1,65 @@
 "use client";
+
 import Link from "next/link";
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Search, Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { name: "Home", href: "/" },
-  { name: "US", href: "/us" },
-  { name: "World", href: "/world" },
-  { name: "Politics", href: "/politics" },
-  { name: "Business", href: "/business" },
-  { name: "Opinion", href: "/opinion" },
-  { name: "Health", href: "/health" },
-  { name: "Entertainment", href: "/entertainment" },
-  { name: "Travel", href: "/travel" },
-  { name: "Sports", href: "/sports" },
+  { name: "India VS Pak", href: "/categories/india-vs-pak" },
+  { name: "Tech", href: "/categories/tech" },
+  { name: "Sports", href: "/categories/sports" },
+  { name: "YouTube", href: "/categories/youtube" },
+  { name: "Health", href: "/categories/health" },
+  { name: "World", href: "/categories/world" },
+  { name: "politics", href: "/categories/politics" },
+  { name: "Business", href: "/categories/business" },
+  { name: "Entertainment", href: "/categories/entertainment" },
+  { name: "Travel", href: "/categories/travel" },
 ];
 
-const sampleData = [
-  { id: 1, title: "US Economy shows signs of recovery", image: "/Logo.jpg" },
-  {
-    id: 2,
-    title: "New political debates spark controversy",
-    image: "/Logo.jpg",
-  },
-  {
-    id: 3,
-    title: "World Health Organization announces new guidelines",
-    image: "/Logo.jpg",
-  },
-  {
-    id: 4,
-    title: "Entertainment industry sees a boom post-pandemic",
-    image: "/Logo.jpg",
-  },
-  {
-    id: 5,
-    title: "Sports update: Champions League final set",
-    image: "/Logo.jpg",
-  },
-];
+// const sampleData = [
+//   { id: 1, title: "US Economy shows signs of recovery", image: "/Logo.jpg" },
+//   {
+//     id: 2,
+//     title: "New political debates spark controversy",
+//     image: "/Logo.jpg",
+//   },
+//   {
+//     id: 3,
+//     title: "World Health Organization announces new guidelines",
+//     image: "/Logo.jpg",
+//   },
+//   {
+//     id: 4,
+//     title: "Entertainment industry sees a boom post-pandemic",
+//     image: "/Logo.jpg",
+//   },
+//   {
+//     id: 5,
+//     title: "Sports update: Champions League final set",
+//     image: "/Logo.jpg",
+//   },
+// ];
 
-const Navbar = () => {
+const Navbar = ({ posts }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [query, setQuery] = useState("");
-  const searchRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef(null);
+  const router = useRouter();
 
-  const filteredData = sampleData.filter((item) =>
+  const filteredData = posts.filter((item) =>
     item.title.toLowerCase().includes(query.toLowerCase())
   );
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event) => {
       if (
         searchRef.current &&
-        !searchRef.current.contains(event.target as Node)
+        !searchRef.current.contains(event.target)
       ) {
         setShowSearch(false);
         setQuery("");
@@ -129,11 +133,12 @@ const Navbar = () => {
                 {filteredData.length ? (
                   filteredData.map((item) => (
                     <div
+                      onClick={() => router.push(`/post/${item.slug}`)}
                       key={item.id}
                       className='flex items-center p-2 space-x-3 hover:bg-gray-100 transition'>
                       <div className='w-12 h-12 flex-shrink-0'>
                         <Image
-                          src={item.image}
+                          src={`http://localhost:8000/storage/${item.image}`}
                           alt={item.title}
                           width={48}
                           height={48}
@@ -206,7 +211,7 @@ const Navbar = () => {
                     className='flex items-center p-2 space-x-3 hover:bg-gray-100 transition'>
                     <div className='w-12 h-12 flex-shrink-0'>
                       <Image
-                        src={item.image}
+                        src={`http://localhost:8000/storage/${item.image}`}
                         alt={item.title}
                         width={48}
                         height={48}
