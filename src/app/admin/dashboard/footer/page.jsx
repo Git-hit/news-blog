@@ -15,9 +15,9 @@ export default function AdminFooterSettings() {
       setLoadingSections(true);
       axios.defaults.withCredentials = true;
       axios.defaults.withXSRFToken = true;
-      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
+      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios
-        .get(`${process.env.API_URL}/api/footer-settings`)
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/footer-settings`)
         .then((res) => {
           setSections(res.data?.sections || []);
         });
@@ -40,8 +40,8 @@ export default function AdminFooterSettings() {
     setMessage("");
     setLoading(true);
     try {
-      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
-      await axios.post(`${process.env.API_URL}/api/footer-settings`, {
+      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/footer-settings`, {
         sections,
       });
       setMessage("Footer saved!");

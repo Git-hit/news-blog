@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
-const API_BASE = process.env.API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 export default function NotificationsManager() {
   const [notifications, setNotifications] = useState([]);

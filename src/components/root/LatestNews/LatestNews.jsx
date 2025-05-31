@@ -58,7 +58,7 @@ const LatestNews = ({ news }) => {
             >
               {item.image ? (
                 <Image
-                  src={`${process.env.API_URL}/storage/${item.image}`}
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}`}
                   alt={item.title}
                   width={500}
                   height={300}

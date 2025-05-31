@@ -16,7 +16,7 @@ export default function Layout() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${process.env.API_URL}/api/news`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`)
       .then((res) => res.json())
       .then((data) => {
         setNews(data);

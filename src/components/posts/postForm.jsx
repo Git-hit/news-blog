@@ -559,11 +559,11 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
         }
       });
 
-      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
+      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
 
       const url = isEdit
-        ? `${process.env.API_URL}/api/posts/${postId}`
-        : `${process.env.API_URL}/api/posts`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/posts`;
       const method = isEdit ? "post" : "post"; // still POST, with `_method: PUT`
 
       if (isEdit) {
@@ -698,7 +698,7 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
                   src={
                     image instanceof File
                       ? imagePreviewUrl // use blob URL directly
-                      : `${process.env.API_URL}/storage/${imagePreviewUrl}` // backend image
+                      : `${process.env.NEXT_PUBLIC_API_URL}/storage/${imagePreviewUrl}` // backend image
                   }
                   alt="Image preview"
                   className="w-32 h-32 object-cover rounded-md shadow-md"
@@ -904,7 +904,7 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
                   src={
                     ogImage instanceof File
                       ? ogImagePreviewUrl // use blob URL directly
-                      : `${process.env.API_URL}/storage/${ogImagePreviewUrl}` // backend image
+                      : `${process.env.NEXT_PUBLIC_API_URL}/storage/${ogImagePreviewUrl}` // backend image
                   }
                   alt="OG Image preview"
                   className="w-32 h-32 object-cover rounded-md shadow-md"

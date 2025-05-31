@@ -9,13 +9,13 @@ import TariffNews from "../../../components/Blog/TariffNews";
 import BlogPage from "../../../components/Blog/HeroArticleHeader";
 import PostViewCounter from "../../../components/posts/postViewCounter";
 
-const API_URL = process.env.API_URL;
+const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function generateMetadata({ params }) {
   // Await params
   const awaitedParams = await params;
 
-  const res = await fetch(`${API_URL}/api/posts/slug/${awaitedParams.slug}`, {
+  const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
     cache: "no-store",
   });
 
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: post.og_title || post.meta_title || post.title,
       description: post.og_description || post.meta_description,
-      images: post.og_image ? [`${API_URL}/storage/${post.og_image}`] : [],
+      images: post.og_image ? [`${NEXT_PUBLIC_API_URL}/storage/${post.og_image}`] : [],
     },
     robots: post.robots_tag,
     alternates: {
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const awaitedParams = await params;
 
-  const res = await fetch(`${API_URL}/api/posts/slug/${awaitedParams.slug}`, {
+  const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
     cache: "no-store",
   });
 
@@ -58,7 +58,7 @@ export default async function Post({ params }) {
 
   let loading = true;
 
-  const response = await fetch(`${process.env.API_URL}/api/news`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
     cache: "no-store",
   });
   const news = await response.json();

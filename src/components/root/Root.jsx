@@ -28,7 +28,7 @@ const Root = ({ mainNews }) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.API_URL}/api/notifications`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`)
       .then((res) => res.json())
       .then((data) => {
         setNotifications(data);
@@ -81,7 +81,7 @@ const Root = ({ mainNews }) => {
               className="relative h-96 cursor-pointer rounded-lg overflow-hidden mb-6"
             >
               <Image
-                src={`${process.env.API_URL}/storage/${item.image}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}`}
                 alt={item.title}
                 fill
                 className="object-cover"
@@ -129,7 +129,7 @@ const Root = ({ mainNews }) => {
                   <div className="cursor-pointer w-24 h-20 rounded-md overflow-hidden flex-shrink-0">
                     <Image
                       src={
-                        `${process.env.API_URL}/storage/${item.image}` ||
+                        `${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}` ||
                         "/logo1.jpg"
                       }
                       alt={item.title}

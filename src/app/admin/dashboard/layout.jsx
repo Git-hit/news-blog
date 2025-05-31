@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }) {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${process.env.API_URL}/api/logout`, {}, { withCredentials: true });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {}, { withCredentials: true });
       localStorage.removeItem("token"); // Remove the token from localStorage
       router.push("/admin/login"); // Redirect to login page after logout
     } catch (err) {

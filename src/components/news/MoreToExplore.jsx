@@ -48,7 +48,7 @@ const MoreToExplore = ({ exploreData, category }) => {
               className="cursor-pointer bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
             >
               <Image
-                src={`${process.env.API_URL}/storage/${item.image}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}`}
                 alt={item.title}
                 width={400}
                 height={250}

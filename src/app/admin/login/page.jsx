@@ -22,13 +22,13 @@ export default function AdminLogin() {
 
   try {
     // First get CSRF cookie
-    await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`, {
+    await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`, {
       withCredentials: true,
     });
 
     // Then post login data
     const res = await axios.post(
-      `${process.env.API_URL}/login`,
+      `${process.env.NEXT_PUBLIC_API_URL}/login`,
       { email, password },
       { withCredentials: true }
     );

@@ -14,8 +14,8 @@ export default function EditPostPage() {
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
     async function fetchPost() {
-      await axios.get(`${process.env.API_URL}/sanctum/csrf-cookie`);
-      const res = await axios.get(`${process.env.API_URL}/api/posts/${id}`);
+      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${id}`);
       setPost(res.data.post);
     }
     fetchPost();
