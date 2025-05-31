@@ -3,27 +3,15 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import React from "react";
 
-// Interface for weekly highlight news
-interface HighlightItem {
-  id: number;
-  image: string;
-  title: string;
-  author: string;
-  timeAgo: string;
-  category: string;
-  readTime: string;
-  views: string;
-}
-
 // Function to extract top 4 most viewed posts
-const WeeklyPostFinder = (data: HighlightItem[]) => {
+const WeeklyPostFinder = (data) => {
   return data
     .sort((a, b) => parseInt(b.views) - parseInt(a.views))
     .slice(0, 4);
 };
 
 // Sample data with `views`
-const weeklyHighlights: HighlightItem[] = [
+const weeklyHighlights = [
   {
     id: 1,
     image: "/Logo1.jpg",

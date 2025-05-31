@@ -23,7 +23,7 @@ const NewsFooter = () => {
     getSections();
   }, []);
 
-  const handleSubscribe = async (e: React.FormEvent) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -36,7 +36,7 @@ const NewsFooter = () => {
       setMessage(res.data.message);
       setEmail("");
       setLoading(false);
-    } catch (error: any) {
+    } catch (error) {
       setLoading(true);
       if (error.response?.status === 422) {
         setMessage(error.response.data.message || "Invalid input.");
@@ -116,11 +116,11 @@ const NewsFooter = () => {
             <li><a href="">YouTube</a></li>
           </ul>
         </div> */}
-        {sections.map((section: any, idx: number) => (
+        {sections.map((section, idx) => (
           <div key={idx}>
             <h4 className="font-semibold text-black">{section.title}</h4>
             <ul className="space-y-1">
-              {section.links.map((link: any, linkIdx: number) => (
+              {section.links.map((link, linkIdx) => (
                 <li key={linkIdx}>
                   <a href={link.url} className="text-sm text-gray-600">
                     {link.label}

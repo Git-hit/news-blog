@@ -1,9 +1,9 @@
-import React from 'react'
-import { Metadata } from 'next';
-import Head from 'next/head';
+// import React from 'react'
+// import { Metadata } from 'next';
+// import Head from 'next/head';
 import Homepage from './Homepage';
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Daily Trend News - Trending News From India and the world",
   description: "Trending News From India and the world",
 };
