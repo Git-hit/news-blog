@@ -10,7 +10,7 @@ export async function GET() {
     const posts = postsRes.data;
     const categories = categoriesRes.data;
 
-    const baseUrl = "http://localhost:3000";
+    const baseUrl = "https://dailytrendnews.in";
 
     // Static Pages
     const staticPages = [
