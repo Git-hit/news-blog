@@ -57,7 +57,7 @@ export default async function Post({ params }) {
     category: post.category, // add what's needed
   };
 
-  const processedHtml = content.replace(/<p><\/p>/g, '<p><br /></p>');
+  const processedHtml = postData.content.replace(/<p><\/p>/g, '<p><br /></p>');
 
   const withDecodedSnippets = processedHtml.replace(
     /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,

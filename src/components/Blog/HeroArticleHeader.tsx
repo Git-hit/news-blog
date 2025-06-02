@@ -1,6 +1,5 @@
 "use client";
 import './blogStyles.css';
-import { decode } from "he";
 
 interface BlogPageProps {
   title?: string;

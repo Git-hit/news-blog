@@ -124,9 +124,9 @@ const Root = ({ mainNews }) => {
                 <div
                   onClick={() => router.push(`/post/${item.slug}`)}
                   key={item.id}
-                  className="flex space-x-4"
+                  className="flex space-x-4 cursor-pointer"
                 >
-                  <div className="cursor-pointer w-24 h-20 rounded-md overflow-hidden flex-shrink-0">
+                  <div className="w-24 h-20 rounded-md overflow-hidden flex-shrink-0">
                     <Image
                       src={
                         `${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}` ||
