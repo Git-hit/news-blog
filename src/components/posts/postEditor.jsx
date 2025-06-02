@@ -104,7 +104,7 @@ const ResizableImageComponent = ({ node, updateAttributes }) => {
 
     // Adjust position relative to the editor's content area
     setDialogPosition({
-      top: rect.top - editorRect.top + rect.height + 10, // 10px below the image
+      top: rect.top - editorRect.top + rect.height + -100, // 10px below the image
       left: rect.left - editorRect.left, // Align with left of the image
     });
 
@@ -143,7 +143,7 @@ const ResizableImageComponent = ({ node, updateAttributes }) => {
             top: dialogPosition.top + "px",
             left: dialogPosition.left + "px",
             zIndex: 999,
-            width: "200px",
+            width: "400px",
           }}
         >
           <div className="text-sm font-medium">Set Alt Text</div>
