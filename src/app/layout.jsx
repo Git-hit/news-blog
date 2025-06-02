@@ -51,6 +51,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/Logo.ico" />
         {gaID && (
           <>
             <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaID}`} />
