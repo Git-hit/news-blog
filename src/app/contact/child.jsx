@@ -7,16 +7,33 @@ import NewsFooter from "../../components/Footer/Footer";
 
 export default function Child() {
   const [news, setNews] = useState([]);
+  const [menu, setMenu] = useState([]);
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`)
-      .then((res) => res.json())
-      .then((data) => {
-        setNews(data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch news:", err);
-        setNews([]); // on error, empty array to stop spinner
-      });
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [newsRes, menuRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`),
+        ]);
+
+        const [newsData, menuData] = await Promise.all([
+          newsRes.json(),
+          menuRes.json(),
+        ]);
+
+        setNews(newsData);
+        setMenu(menuData);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setNews([]);
+        setMenu([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -61,7 +78,7 @@ export default function Child() {
 
   return (
     <>
-      <Navbar posts={news} />
+      <Navbar posts={news} menu={menu} />
       <main className="py-14">
         <div className="max-w-screen-xl mx-auto px-4 text-gray-600 md:px-8">
           <div className="max-w-lg mx-auto space-y-3 sm:text-center">
