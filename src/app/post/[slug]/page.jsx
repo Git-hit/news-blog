@@ -8,6 +8,7 @@ import MostRead from "../../../components/news/MostRead";
 import TariffNews from "../../../components/Blog/TariffNews";
 import BlogPage from "../../../components/Blog/HeroArticleHeader";
 import PostViewCounter from "../../../components/posts/postViewCounter";
+import { decode } from "he";
 
 const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -56,6 +57,13 @@ export default async function Post({ params }) {
     category: post.category, // add what's needed
   };
 
+  const processedHtml = content.replace(/<p><\/p>/g, '<p><br /></p>');
+
+  const withDecodedSnippets = processedHtml.replace(
+    /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
+    (_, encodedContent) => decode(encodedContent)
+  );
+
   let loading = true;
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
@@ -81,7 +89,7 @@ export default async function Post({ params }) {
           <PostViewCounter slug={awaitedParams.slug} type={"posts"} />
           <BlogPage
             title={postData.title}
-            content={postData.content}
+            content={withDecodedSnippets}
             image={postData.image}
           />
           <Upnext posts={news} category={awaitedParams.slug} />

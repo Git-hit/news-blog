@@ -56,6 +56,13 @@ export default async function Page({ params }) {
     category: page.category, // add what's needed
   };
 
+  const processedHtml = content.replace(/<p><\/p>/g, '<p><br /></p>');
+  
+    const withDecodedSnippets = processedHtml.replace(
+      /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
+      (_, encodedContent) => decode(encodedContent)
+    );
+
   let loading = true;
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
@@ -81,7 +88,7 @@ export default async function Page({ params }) {
           <PostViewCounter slug={awaitedParams.slug} type={"pages"} />
           <BlogPage
             title={pageData.title}
-            content={pageData.content}
+            content={withDecodedSnippets}
             image={pageData.image}
           />
           {/* <Upnext posts={news} category={awaitedParams.slug} /> */}
