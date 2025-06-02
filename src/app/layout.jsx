@@ -78,7 +78,9 @@ export default async function RootLayout({ children }) {
           <meta name="google-site-verification" content={verificationCode} />
         )}
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+      </body>
     </html>
   );
 }

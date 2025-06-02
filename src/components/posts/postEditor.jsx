@@ -510,9 +510,10 @@ export default function PostEditor({
       .focus()
       .insertContent({
         type: "htmlSnippet",
-        attrs: { content: customHtml },
+        attrs: { content: customHtml }
       })
       .run();
+    // editor.commands.insertContentAt(editor.state.selection.anchor, customHtml);
     setShowHtmlModal(false);
     setCustomHtml("");
   };

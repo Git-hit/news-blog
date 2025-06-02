@@ -88,6 +88,7 @@ export default async function Post({ params }) {
           {/* <MostRead mostReadData={postData} category={} /> */}
           {/* <TariffNews /> */}
           <NewsFooter />
+          <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
       )}
     </>

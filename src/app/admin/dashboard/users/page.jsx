@@ -275,6 +275,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const PERMISSION_LABELS = {
   create_edit_post: "Create/Edit post",
@@ -329,7 +330,7 @@ export default function UsersPage() {
 
     // const localPerms = JSON.parse(localStorage.getItem("permissions") || "[]");
     // const allowed = localPerms.includes("manage_notifications");
-    const allowed = localStorage.getItem("role") === "admin"
+    const allowed = localStorage.getItem("role") === "admin";
     setAllowed(allowed);
 
     if (allowed) fetchData();
@@ -346,6 +347,7 @@ export default function UsersPage() {
   const handleTogglePermission = async (userId, permission) => {
     setUpdatingPermissionId(userId);
     try {
+      await axios.get(`${API}/sanctum/csrf-cookie`);
       await axios.post(`${API}/api/users/${userId}/permissions`, {
         permission,
       });
@@ -373,14 +375,16 @@ export default function UsersPage() {
     e.preventDefault();
     setSavingUser(true);
     try {
+      await axios.get(`${API}/sanctum/csrf-cookie`);
       await axios.post(`${API}/api/users`, formData);
       setShowForm(false);
       setFormData({ name: "", email: "", password: "", permissions: [] });
-
       const userRes = await axios.get(`${API}/api/users`);
       setUsers(userRes.data.users);
+      toast("User successfully added");
     } catch (err) {
-      console.error("Failed to create user", err);
+      toast("Error adding user");
+      //   console.error("Failed to create user", err);
     } finally {
       setSavingUser(false);
     }
@@ -389,10 +393,13 @@ export default function UsersPage() {
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
     try {
+      await axios.get(`${API}/sanctum/csrf-cookie`);
       await axios.delete(`${API}/api/users/${userToDelete.id}`);
       setUsers((prev) => prev.filter((user) => user.id !== userToDelete.id));
+      toast("User successfully deleted");
     } catch (err) {
-      console.error("Failed to delete user", err);
+      toast("Error deleting user");
+      //   console.error("Failed to delete user", err);
     } finally {
       setDeleteDialogOpen(false);
       setUserToDelete(null);
@@ -459,7 +466,9 @@ export default function UsersPage() {
           </div>
 
           <div className="mb-6">
-            <Label className="font-medium mb-2 block">Assign Permissions:</Label>
+            <Label className="font-medium mb-2 block">
+              Assign Permissions:
+            </Label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {Object.entries(PERMISSION_LABELS).map(([key, label]) => (
                 <div key={key} className="flex items-center space-x-2">
@@ -518,7 +527,10 @@ export default function UsersPage() {
                   </TableCell>
                 ))}
                 <TableCell>
-                  <Dialog open={deleteDialogOpen && userToDelete?.id === user.id} onOpenChange={setDeleteDialogOpen}>
+                  <Dialog
+                    open={deleteDialogOpen && userToDelete?.id === user.id}
+                    onOpenChange={setDeleteDialogOpen}
+                  >
                     <DialogTrigger asChild>
                       <Button variant="destructive" size="sm">
                         Delete
@@ -528,14 +540,21 @@ export default function UsersPage() {
                       <DialogHeader>
                         <DialogTitle>Confirm Delete</DialogTitle>
                         <DialogDescription>
-                          Are you sure you want to delete user <b>{user.name}</b>?
+                          Are you sure you want to delete user{" "}
+                          <b>{user.name}</b>?
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                        <Button
+                          variant="outline"
+                          onClick={() => setDeleteDialogOpen(false)}
+                        >
                           Cancel
                         </Button>
-                        <Button variant="destructive" onClick={handleDeleteUser}>
+                        <Button
+                          variant="destructive"
+                          onClick={handleDeleteUser}
+                        >
                           Delete
                         </Button>
                       </DialogFooter>

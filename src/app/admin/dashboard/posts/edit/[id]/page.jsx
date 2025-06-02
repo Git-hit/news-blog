@@ -39,6 +39,7 @@ export default function EditPostPage() {
       ) : (
         <p>Loading post...</p>
       )}
+      <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     </div>
   );
 }
