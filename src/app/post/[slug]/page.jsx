@@ -62,6 +62,10 @@ export default async function Post({ params }) {
     cache: "no-store",
   });
   const news = await response.json();
+  const menuRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`, {
+    cache: "no-store",
+  });
+  const menu = await menuRes.json();
   loading = false;
 
   return (
@@ -72,9 +76,9 @@ export default async function Post({ params }) {
         </div>
       ) : (
         <div>
-          <Navbar posts={news} />
+          <Navbar posts={news} menu={menu} />
           {/* <TopIndex /> */}
-          <PostViewCounter slug={awaitedParams.slug} />
+          <PostViewCounter slug={awaitedParams.slug} type={"posts"} />
           <BlogPage
             title={postData.title}
             content={postData.content}

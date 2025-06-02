@@ -8,6 +8,7 @@ const NewsFooter = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState([]);
+  const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
     async function getSections() {
@@ -36,6 +37,7 @@ const NewsFooter = () => {
       setMessage(res.data.message);
       setEmail("");
       setLoading(false);
+      setSubscribed(true);
     } catch (error) {
       setLoading(true);
       if (error.response?.status === 422) {
@@ -74,11 +76,12 @@ const NewsFooter = () => {
               required
             />
             <button
+              disabled={subscribed}
               type="submit"
               className="bg-black text-white px-4 py-2 text-sm hover:bg-neutral-800 transition"
             >
               {loading ? (
-                <div className="flex h-screen justify-center items-center">
+                <div className="flex justify-center items-center">
                   <div className="animate-spin border-2 border-slate-900 border-b-transparent rounded-full size-5"></div>
                 </div>
               ) : (

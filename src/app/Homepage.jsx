@@ -9,21 +9,37 @@ import NewsFooter from "../components/Footer/Footer";
 
 const Homepage = () => {
   const [news, setNews] = useState([]);
+  const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`)
-      .then((res) => res.json())
-      .then((data) => {
-        setNews(data);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [newsRes, menuRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`),
+        ]);
+
+        const [newsData, menuData] = await Promise.all([
+          newsRes.json(),
+          menuRes.json(),
+        ]);
+
+        setNews(newsData);
+        setMenu(menuData);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setNews([]);
+        setMenu([]);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch news:", err);
-        setNews([]); // on error, empty array to stop spinner
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
+
   return (
     <>
       {loading ? (
@@ -32,11 +48,11 @@ const Homepage = () => {
         </div>
       ) : (
         <div>
-          <Navbar posts={news} />
+          <Navbar posts={news} menu={menu} />
           <Root mainNews={news} />
           <LatestNews news={news} />
           <MustRead posts={news} />
-          {/* <WeeklyHighlight/> */}
+          {/* <WeeklyHighlight /> */}
           <NewsFooter />
         </div>
       )}

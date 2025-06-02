@@ -5,46 +5,23 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Search, Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "India VS Pak", href: "/categories/india-vs-pak" },
-  { name: "Tech", href: "/categories/tech" },
-  { name: "Sports", href: "/categories/sports" },
-  { name: "YouTube", href: "/categories/youtube" },
-  { name: "Health", href: "/categories/health" },
-  { name: "World", href: "/categories/world" },
-  { name: "politics", href: "/categories/politics" },
-  { name: "Business", href: "/categories/business" },
-  { name: "Entertainment", href: "/categories/entertainment" },
-  { name: "Travel", href: "/categories/travel" },
-];
-
-// const sampleData = [
-//   { id: 1, title: "US Economy shows signs of recovery", image: "/Logo.jpg" },
-//   {
-//     id: 2,
-//     title: "New political debates spark controversy",
-//     image: "/Logo.jpg",
-//   },
-//   {
-//     id: 3,
-//     title: "World Health Organization announces new guidelines",
-//     image: "/Logo.jpg",
-//   },
-//   {
-//     id: 4,
-//     title: "Entertainment industry sees a boom post-pandemic",
-//     image: "/Logo.jpg",
-//   },
-//   {
-//     id: 5,
-//     title: "Sports update: Champions League final set",
-//     image: "/Logo.jpg",
-//   },
+// const navLinks = [
+//   { name: "Home", href: "/" },
+//   { name: "India VS Pak", href: "/categories/india-vs-pak" },
+//   { name: "Tech", href: "/categories/tech" },
+//   { name: "Sports", href: "/categories/sports" },
+//   { name: "YouTube", href: "/categories/youtube" },
+//   { name: "Health", href: "/categories/health" },
+//   { name: "World", href: "/categories/world" },
+//   { name: "politics", href: "/categories/politics" },
+//   { name: "Business", href: "/categories/business" },
+//   { name: "Entertainment", href: "/categories/entertainment" },
+//   { name: "Travel", href: "/categories/travel" },
 // ];
 
-const Navbar = ({ posts }) => {
+const Navbar = ({ posts, menu }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [query, setQuery] = useState("");
@@ -82,13 +59,13 @@ const Navbar = ({ posts }) => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center'>
         {/* Logo */}
         <div className='flex items-center space-x-2'>
-          <Image src='/Logo.png' alt='Logo' width={100} height={100} />
+          <Image className="!cursor-pointer" src='/Logo.png' onClick={() => router.push("/")} alt='Logo' width={100} height={100} />
         </div>
 
         {/* Desktop Nav Links */}
         {!showSearch && (
           <ul className='hidden md:flex space-x-6'>
-            {navLinks.map((link) => (
+            {menu.map((link) => (
               <li key={link.name}>
                 <Link
                   href={link.href}
@@ -237,7 +214,7 @@ const Navbar = ({ posts }) => {
       {menuOpen && (
         <div className='md:hidden px-4 pb-4 bg-black'>
           <ul className='space-y-3'>
-            {navLinks.map((link) => (
+            {menu.map((link) => (
               <li key={link.name}>
                 <Link
                   href={link.href}

@@ -22,21 +22,27 @@ export default function AdminLogin() {
 
   try {
     // First get CSRF cookie
-    await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`, {
-      withCredentials: true,
-    });
+    await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
 
     // Then post login data
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/login`,
-      { email, password },
-      { withCredentials: true }
+      { email, password }
     );
+
+    const { user } = res.data;
+
+    // 💾 Save to localStorage if needed
+    localStorage.setItem('role', user.role);
+    localStorage.setItem('permissions', JSON.stringify(user.permissions));
+
+    // console.log("Logged in as:", user.role);
+    // console.log("Permissions:", user.permissions);
 
     if (res.status === 200) {
       localStorage.setItem("token", res.data.token);
       // Redirect or update UI as needed
-      window.location.href = '/admin/dashboard';
+      window.location.href = '/admin/dashboard/posts';
     }
   } catch (err) {
     console.log(err);

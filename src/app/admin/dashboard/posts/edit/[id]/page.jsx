@@ -8,6 +8,7 @@ import axios from "axios";
 export default function EditPostPage() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [allowed, setAllowed] = useState();
 
   useEffect(() => {
     document.title = "Edit Post";
@@ -18,8 +19,17 @@ export default function EditPostPage() {
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${id}`);
       setPost(res.data.post);
     }
-    fetchPost();
+    const localPerms = JSON.parse(localStorage.getItem("permissions") || "[]");
+    const allowed = localPerms.includes("create_edit_post")
+    setAllowed(allowed);
+    if (allowed) fetchPost();
   }, [id]);
+
+  if(!allowed){
+    return(
+        <p className="text-red-500">You don’t have permission to view this page.</p>
+    )
+  }
 
   return (
     <div>

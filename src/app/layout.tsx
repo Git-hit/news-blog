@@ -11,24 +11,73 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  icons: {
-    icon: "/Logo.ico",
-  },
-};
+// export const metadata = {
+//   icons: {
+//     icon: "/Logo.ico",
+//   },
+// };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export async function generateMetadata() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
+    next: { revalidate: 3600 }, // cache hourly
+  });
+  const settings = await res.json();
+  const get = (key) => settings.find((s) => s.key === key)?.value;
+
+  return {
+    icons: {
+      icon: "/Logo.ico",
+    },
+    title: get('site_title') || 'Default Site Title',
+    description: get('meta_description') || '',
+    keywords: get('meta_keywords') || '',
+    other: {
+      'google-site-verification': get('google_verification_code') || '',
+    },
+  };
+}
+
+export default async function RootLayout({ children }) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
+    next: { revalidate: 3600 },
+  });
+  const settings = await res.json();
+  const get = (key) => settings.find((s) => s.key === key)?.value;
+
+  const gaID = get('google_analytics_id');
+  const adsenseID = get('google_adsense_id');
+  const verificationCode = get('google_verification_code');
+
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <head>
+        {gaID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${gaID}');
+                `,
+              }}
+            />
+          </>
+        )}
+        {adsenseID && (
+          <script
+            data-ad-client={adsenseID}
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          />
+        )}
+        {verificationCode && (
+          <meta name="google-site-verification" content={verificationCode} />
+        )}
+      </head>
+      <body>{children}</body>
     </html>
   );
 }
