@@ -1,4 +1,6 @@
-import { Node, mergeAttributes } from "@tiptap/core";
+import { Node, 
+  // mergeAttributes 
+} from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { decode } from "he";
 import { useEffect, useRef } from "react";
