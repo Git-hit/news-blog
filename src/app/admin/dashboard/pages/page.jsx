@@ -33,6 +33,7 @@ export default function AllPages() {
 
   useEffect(() => {
     setRole(localStorage.getItem("role"));
+    // console.log(localStorage.getItem("role"))
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
 
@@ -111,12 +112,11 @@ export default function AllPages() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 className="text-3xl font-bold tracking-tight">📄 All Pages</h1>
-        {permissions.includes("create_edit_page") ||
-          (role === "admin" && (
+        {(permissions.includes("create_edit_page") || role === "admin") && (
             <Link href="/admin/dashboard/pages/new">
               <Button className="text-sm">+ New Page</Button>
             </Link>
-          ))}
+          )}
       </div>
 
       {loading ? (
