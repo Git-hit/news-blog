@@ -59,10 +59,24 @@ export default async function Post({ params }) {
 
   const processedHtml = postData.content.replace(/<p><\/p>/g, '<p><br /></p>');
 
+  // const withDecodedSnippets = processedHtml.replace(
+  //   /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
+  //   (_, encodedContent) => decode(encodedContent)
+  // );
+
   const withDecodedSnippets = processedHtml.replace(
-    /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
-    (_, encodedContent) => decode(encodedContent)
-  );
+  /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
+  (_, encodedContent) => {
+    const decoded = decode(encodedContent);
+    return `
+      <div style="max-width: 100%; overflow: hidden;">
+        <div style="position: relative; width: 100% height: auto;">
+          ${decoded.replace(/width="[^"]*"/g, 'width=100%').replace(/height="[^"]*"/g, `style="min-height:400px"`)}
+        </div>
+      </div>
+    `;
+  }
+);
 
   let loading = true;
 

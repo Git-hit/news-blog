@@ -127,7 +127,7 @@ export default function EditPage() {
       //   ? `${process.env.NEXT_PUBLIC_API_URL}/api/pages/${postId}`
       //   : `${process.env.NEXT_PUBLIC_API_URL}/api/pages`;
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/pages/${Id}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/pages/${id}`;
 
       // if (isEdit) {
       formData.append("_method", "PUT");
