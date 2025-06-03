@@ -11,7 +11,7 @@ export default function BlogPage({ title = 'Untitled', content = '', image = "" 
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
-      <img src={image} />
+      <img src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${image}`} />
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
       <article
         className="prose max-w-none"
