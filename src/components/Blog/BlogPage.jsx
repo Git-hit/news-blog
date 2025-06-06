@@ -8,26 +8,12 @@ import { toast } from "sonner";
 import axios from "axios";
 import { DateTime } from "luxon";
 
-interface BlogPageProps {
-  title?: string;
-  content?: string;
-  image?: string;
-  slug?: string;
-}
-
-interface Comment {
-  id: number;
-  name: string;
-  comment: string;
-  created_at: string;
-}
-
 export default function BlogPage({
   title = "Untitled",
   content = "",
   image = "",
   slug = "",
-}: BlogPageProps) {
+}) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,7 +21,7 @@ export default function BlogPage({
     "post-slug": `posts/${slug}`,
   });
   const [submitting, setSubmitting] = useState(false);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState([]);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -53,12 +39,12 @@ export default function BlogPage({
   }, [slug]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
@@ -69,7 +55,7 @@ export default function BlogPage({
         formData
       );
 
-      const newComment: Comment = {
+      const newComment = {
         id: Date.now(),
         name: formData.name,
         comment: formData.comment,
