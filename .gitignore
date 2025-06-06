@@ -31,7 +31,11 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
+<<<<<<< HEAD
 .env*
+=======
+# .env*
+>>>>>>> b387a85 (Fixed more with adsense code and others)
 
 # vercel
 .vercel

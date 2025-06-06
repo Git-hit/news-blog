@@ -117,7 +117,11 @@ export default function PostsPage() {
                 <TableRow className="bg-gray-100">
                   <TableHead>#</TableHead>
                   <TableHead>Title</TableHead>
+<<<<<<< HEAD
                   <TableHead>Slug</TableHead>
+=======
+                  {/* <TableHead>Slug</TableHead> */}
+>>>>>>> b387a85 (Fixed more with adsense code and others)
                   <TableHead>Views</TableHead>
                   <TableHead>Featured</TableHead>
                   <TableHead>Actions</TableHead>
@@ -128,7 +132,11 @@ export default function PostsPage() {
                   <TableRow key={post.id} className="hover:bg-gray-50 transition">
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">{post.title}</TableCell>
+<<<<<<< HEAD
                     <TableCell>{post.slug}</TableCell>
+=======
+                    {/* <TableCell>{post.slug}</TableCell> */}
+>>>>>>> b387a85 (Fixed more with adsense code and others)
                     <TableCell>{post.views ?? 0}</TableCell>
                     <TableCell>
                       {post.featured === 1 ? (

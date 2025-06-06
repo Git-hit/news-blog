@@ -6,7 +6,11 @@ import TopIndex from "../../components/Blog/TopIndex";
 import Upnext from "../../components/Blog/Upnext";
 import MostRead from "../../components/news/MostRead";
 import TariffNews from "../../components/Blog/TariffNews";
+<<<<<<< HEAD
 import BlogPage from "../../components/Blog/HeroArticleHeader";
+=======
+import BlogPage from "../../components/Blog/BlogPage";
+>>>>>>> b387a85 (Fixed more with adsense code and others)
 import PostViewCounter from "../../components/posts/postViewCounter";
 
 const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;

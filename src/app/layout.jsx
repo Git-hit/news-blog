@@ -69,9 +69,14 @@ export default async function RootLayout({ children }) {
         )}
         {adsenseID && (
           <script
+<<<<<<< HEAD
             data-ad-client={adsenseID}
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+=======
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseID}`}
+>>>>>>> b387a85 (Fixed more with adsense code and others)
           />
         )}
         {verificationCode && (

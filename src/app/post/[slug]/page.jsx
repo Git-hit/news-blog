@@ -6,7 +6,11 @@ import TopIndex from "../../../components/Blog/TopIndex";
 import Upnext from "../../../components/Blog/Upnext";
 import MostRead from "../../../components/news/MostRead";
 import TariffNews from "../../../components/Blog/TariffNews";
+<<<<<<< HEAD
 import BlogPage from "../../../components/Blog/HeroArticleHeader";
+=======
+import BlogPage from "../../../components/Blog/BlogPage";
+>>>>>>> b387a85 (Fixed more with adsense code and others)
 import PostViewCounter from "../../../components/posts/postViewCounter";
 import { decode } from "he";
 
@@ -105,6 +109,10 @@ export default async function Post({ params }) {
             title={postData.title}
             content={withDecodedSnippets}
             image={postData.image}
+<<<<<<< HEAD
+=======
+            slug={awaitedParams.slug}
+>>>>>>> b387a85 (Fixed more with adsense code and others)
           />
           <Upnext posts={news} category={awaitedParams.slug} />
           {/* <MostRead mostReadData={postData} category={} /> */}

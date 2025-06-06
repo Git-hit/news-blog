@@ -139,9 +139,15 @@ export default function AllPages() {
                   <TableHead className="text-sm font-semibold text-gray-600">
                     Title
                   </TableHead>
+<<<<<<< HEAD
                   <TableHead className="text-sm font-semibold text-gray-600">
                     Slug
                   </TableHead>
+=======
+                  {/* <TableHead className="text-sm font-semibold text-gray-600">
+                    Slug
+                  </TableHead> */}
+>>>>>>> b387a85 (Fixed more with adsense code and others)
                   <TableHead className="text-sm font-semibold text-gray-600">
                     Views
                   </TableHead>
@@ -158,7 +164,11 @@ export default function AllPages() {
                   >
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">{page.title}</TableCell>
+<<<<<<< HEAD
                     <TableCell>{page.slug}</TableCell>
+=======
+                    {/* <TableCell>{page.slug}</TableCell> */}
+>>>>>>> b387a85 (Fixed more with adsense code and others)
                     <TableCell>{page.views ?? 0}</TableCell>
                     <TableCell className="space-x-3 whitespace-nowrap">
                       {permissions.includes("view_pages_only") &&
