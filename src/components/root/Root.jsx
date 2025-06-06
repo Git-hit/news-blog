@@ -90,19 +90,11 @@ const Root = ({ mainNews }) => {
                 <h2 className="text-xl font-bold leading-tight mb-2">
                   {item.title}
                 </h2>
-<<<<<<< HEAD
-                {item.meta_description && (
-                  <p className="text-sm text-gray-700 line-clamp-3">
-                    {item.meta_description}
-                  </p>
-                )}
-=======
                 {/* {item.meta_description && (
                   <p className="text-sm text-gray-700 line-clamp-3">
                     {item.meta_description}
                   </p>
                 )} */}
->>>>>>> b387a85 (Fixed more with adsense code and others)
                 <p className="text-xs text-gray-400 mt-2">
                   {formatPosted(item.created_at)} • Read More
                 </p>
