@@ -116,7 +116,7 @@ export default function BlogPage({
                 <div className="animate-spin border-2 border-white border-b-transparent rounded-full size-7"></div>
               </div>
             ) : (
-              "Submit Comment"
+              "Comment"
             )}
           </Button>
         </form>
