@@ -7,16 +7,16 @@ import Upnext from "../../../components/Blog/Upnext";
 import MostRead from "../../../components/news/MostRead";
 import TariffNews from "../../../components/Blog/TariffNews";
 import BlogPage from "../../../components/Blog/BlogPage";
-import PostViewCounter from "../../../components/posts/postViewCounter";
+import PostViewCounter from "../../../components/posts/viewCountUpdater";
 import { decode } from "he";
 
-const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
+// const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function generateMetadata({ params }) {
   // Await params
   const awaitedParams = await params;
 
-  const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
     cache: "no-store",
   });
 
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: post.og_title || post.meta_title || post.title,
       description: post.og_description || post.meta_description,
-      images: post.og_image ? [`${NEXT_PUBLIC_API_URL}/storage/${post.og_image}`] : [],
+      images: post.og_image ? [`/uploads/${post.og_image}`] : [],
     },
     robots: post.robots_tag,
     alternates: {
@@ -42,27 +42,24 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const awaitedParams = await params;
 
-  const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
     cache: "no-store",
   });
 
   if (!res.ok) return notFound();
 
-  const { post } = await res.json();
+  const { post, comments, allPosts } = await res.json();
 
   const postData = {
     title: post.title,
     content: post.content,
     image: post.image,
-    category: post.category, // add what's needed
+    category: post.category,
+    comments,
+    allPosts,
   };
 
   const processedHtml = postData.content.replace(/<p><\/p>/g, '<p><br /></p>');
-
-  // const withDecodedSnippets = processedHtml.replace(
-  //   /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
-  //   (_, encodedContent) => decode(encodedContent)
-  // );
 
   const withDecodedSnippets = processedHtml.replace(
   /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
@@ -106,12 +103,14 @@ export default async function Post({ params }) {
             content={withDecodedSnippets}
             image={postData.image}
             slug={awaitedParams.slug}
+            allComments={postData.comments}
+            allPosts={postData.allPosts}
           />
           <Upnext posts={news} category={awaitedParams.slug} />
           {/* <MostRead mostReadData={postData} category={} /> */}
           {/* <TariffNews /> */}
           <NewsFooter />
-          <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+          <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
         </div>
       )}
     </>

@@ -22,7 +22,7 @@ export async function generateMetadata() {
     next: { revalidate: 3600 }, // cache hourly
   });
   const settings = await res.json();
-  const get = (key) => settings.find((s) => s.key === key)?.value;
+  const get = (key) => settings[key];
 
   return {
     icons: {
@@ -42,7 +42,8 @@ export default async function RootLayout({ children }) {
     next: { revalidate: 3600 },
   });
   const settings = await res.json();
-  const get = (key) => settings.find((s) => s.key === key)?.value;
+  // console.log(settings)
+  const get = (key) => settings[key];
 
   const gaID = get('google_analytics_id');
   const adsenseID = get('google_adsense_id');

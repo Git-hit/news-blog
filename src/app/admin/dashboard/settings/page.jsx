@@ -29,15 +29,16 @@ export default function SettingsPage() {
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/api/settings`
       );
+
       const data = {};
-      res.data.forEach((setting) => {
-        data[setting.key] = setting.value;
+      Object.entries(res.data).forEach(([key, value]) => {
+        data[key] = value;
       });
+
       setSettings(data);
       setLoadingSetting(false);
     };
 
-    // const localPerms = JSON.parse(localStorage.getItem("permissions") || "[]");
     const hasPermission = localStorage.getItem("role") === "admin";
     setAllowed(hasPermission);
     if (hasPermission) getSettings();
@@ -60,7 +61,6 @@ export default function SettingsPage() {
     try {
       axios.defaults.withCredentials = true;
       axios.defaults.withXSRFToken = true;
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/settings`,
         settings

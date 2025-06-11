@@ -10,7 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 
 axios.defaults.withCredentials = true;
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+// const process.env.NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function NotificationsManager() {
   const [notifications, setNotifications] = useState([]);
@@ -27,7 +27,7 @@ export default function NotificationsManager() {
     axios.defaults.withXSRFToken = true;
 
     const localPerms = JSON.parse(localStorage.getItem("permissions") || "[]");
-    const allowed = localPerms.includes("manage_notifications");
+    const allowed = localStorage.getItem("role") === "admin" || localPerms.includes("manage_notifications");
     setAllowed(allowed);
   }, []);
 
@@ -35,21 +35,16 @@ export default function NotificationsManager() {
     return (
       <Alert variant="destructive" className="max-w-3xl mx-auto mt-10">
         <AlertCircleIcon />
-        <AlertTitle>No Permission</AlertTitle>
+        <AlertTitle>Not allowed</AlertTitle>
         <AlertDescription>You don’t have permission to view this page.</AlertDescription>
       </Alert>
     );
   }
 
-  const getCSRF = async () => {
-    await axios.get(`${API_BASE}/sanctum/csrf-cookie`);
-  };
-
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      await getCSRF();
-      const res = await axios.get(`${API_BASE}/api/notifications`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`);
       setNotifications(res.data);
     } finally {
       setLoading(false);
@@ -60,11 +55,10 @@ export default function NotificationsManager() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await getCSRF();
       if (editing) {
-        await axios.put(`${API_BASE}/api/notifications/${editing}`, newNotification);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${editing}`, newNotification);
       } else {
-        await axios.post(`${API_BASE}/api/notifications`, newNotification);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, newNotification);
       }
       setNewNotification({ title: "", link: "" });
       setEditing(null);
@@ -82,8 +76,7 @@ export default function NotificationsManager() {
   const handleDelete = async (id) => {
     setDeletingId(id);
     try {
-      await getCSRF();
-      await axios.delete(`${API_BASE}/api/notifications/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${id}`);
       fetchNotifications();
     } finally {
       setDeletingId(null);

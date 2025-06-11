@@ -7,7 +7,7 @@ import Upnext from "../../components/Blog/Upnext";
 import MostRead from "../../components/news/MostRead";
 import TariffNews from "../../components/Blog/TariffNews";
 import BlogPage from "../../components/Blog/BlogPage";
-import PostViewCounter from "../../components/posts/postViewCounter";
+import PostViewCounter from "../../components/posts/viewCountUpdater";
 
 const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 

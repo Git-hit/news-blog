@@ -15,7 +15,6 @@ export default function EditPostPage() {
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
     async function fetchPost() {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${id}`);
       setPost(res.data.post);
     }
@@ -39,7 +38,7 @@ export default function EditPostPage() {
       ) : (
         <p>Loading post...</p>
       )}
-      <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+      <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import {
   EditorContent,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
+// import Image from "@tiptap/extension-image";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
@@ -130,6 +130,7 @@ const ResizableImageComponent = ({ node, updateAttributes }) => {
       <img
         src={src}
         alt={alt}
+        referrerPolicy="no-referrer"
         style={{ width: "100%", height: "100%", display: "block" }}
         draggable={false}
         onClick={handleClickImage}
@@ -269,6 +270,7 @@ export const ResizableImage = Node.create({
       width: { default: 300 },
       height: { default: 200 },
       alt: { default: null },
+      "referrer-policy": { default: "no-referrer" }
     };
   },
 

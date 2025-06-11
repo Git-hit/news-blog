@@ -14,11 +14,23 @@ const NewsFooter = () => {
     async function getSections() {
       axios.defaults.withCredentials = true;
       axios.defaults.withXSRFToken = true;
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/api/footer-settings`)
         .then((res) => {
-          setSections(res.data?.sections || []);
+          const rawSections = res.data?.sections;
+
+          let parsedSections = [];
+
+          try {
+            parsedSections =
+              typeof rawSections === "string"
+                ? JSON.parse(rawSections)
+                : rawSections;
+          } catch (err) {
+            console.error("Failed to parse sections", err);
+          }
+
+          setSections(parsedSections || []);
         });
     }
     getSections();
@@ -28,7 +40,6 @@ const NewsFooter = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
 
       const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/subscribe`, {
         email,
@@ -78,11 +89,11 @@ const NewsFooter = () => {
             <button
               disabled={subscribed}
               type="submit"
-              className="bg-black text-white px-4 py-2 text-sm hover:bg-neutral-800 transition"
+              className="bg-black text-white px-4 py-2 text-sm hover:bg-neutral-800 transition cursor-pointer"
             >
               {loading ? (
                 <div className="flex justify-center items-center">
-                  <div className="animate-spin border-2 border-slate-900 border-b-transparent rounded-full size-5"></div>
+                  <div className="animate-spin border-2 border-gray-200 border-b-transparent rounded-full size-5"></div>
                 </div>
               ) : (
                 "Subscribe"
@@ -91,34 +102,6 @@ const NewsFooter = () => {
           </form>
           {message && <p className="text-green-600 text-xs mt-1">{message}</p>}
         </div>
-
-        {/* Footer Columns */}
-        {/* <div className="space-y-3">
-          <h4 className="font-semibold text-black">News</h4>
-          <ul className="space-y-1">
-            <li><a href="">World</a></li>
-            <li><a href="">Politics</a></li>
-            <li><a href="">Business</a></li>
-            <li><a href="">Tech</a></li>
-          </ul>
-        </div>
-        <div className="space-y-3">
-          <h4 className="font-semibold text-black">Company</h4>
-          <ul className="space-y-1">
-            <li>
-              <a href="/contact">Contact</a>
-            </li>
-          </ul>
-        </div>
-        <div className="space-y-3">
-          <h4 className="font-semibold text-black">Connect</h4>
-          <ul className="space-y-1">
-            <li><a href="">Facebook</a></li>
-            <li><a href="">Twitter</a></li>
-            <li><a href="">Instagram</a></li>
-            <li><a href="">YouTube</a></li>
-          </ul>
-        </div> */}
         {sections.map((section, idx) => (
           <div key={idx}>
             <h4 className="font-semibold text-black">{section.title}</h4>
@@ -141,8 +124,6 @@ const NewsFooter = () => {
         <div className="flex flex-wrap gap-4">
           <a href="/terms-of-service">Terms of Service</a>
           <a href="/privacy-policy">Privacy Policy</a>
-          {/* <a href="#">Cookies</a>
-          <a href="#">Advertise</a> */}
         </div>
       </div>
     </footer>

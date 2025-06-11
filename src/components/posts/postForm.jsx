@@ -212,8 +212,6 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
         }
       });
 
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
-
       const url = isEdit
         ? `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}`
         : `${process.env.NEXT_PUBLIC_API_URL}/api/posts`;

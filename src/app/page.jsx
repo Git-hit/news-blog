@@ -5,15 +5,15 @@ export async function generateMetadata() {
     next: { revalidate: 3600 }, // cache for 1 hour
   });
   const settings = await res.json();
-  const get = (key) => settings.find((s) => s.key === key)?.value;
+  const get = (key) => settings[key];
 
   return {
     title: get('site_title') || 'Default Title',
     description: get('meta_description') || 'Default Description',
     keywords: get('meta_keywords') || '',
-    other: {
-      'google-site-verification': get('google_verification_code') || '',
-    }
+    // other: {
+    //   'google-site-verification': get('google_verification_code') || '',
+    // }
   };
 }
 

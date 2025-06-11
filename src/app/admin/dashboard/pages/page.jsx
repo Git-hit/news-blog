@@ -54,7 +54,6 @@ export default function AllPages() {
 
   const fetchPages = async () => {
     try {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/api/pages`
       );
@@ -70,7 +69,6 @@ export default function AllPages() {
   //   if (!confirm("Are you sure you want to delete this page?")) return;
 
   //   try {
-  //     await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
   //     await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/pages/${id}`);
   //     setPages(pages.filter((page) => page.id !== id));
   //   } catch (err) {
@@ -83,7 +81,6 @@ export default function AllPages() {
     if (!deletingId) return;
 
     try {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL}/api/pages/${deletingId}`
       );

@@ -44,8 +44,6 @@ export default function CategorySelector({
     setCreatingNewCategory(true);
 
     try {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`); // fetch XSRF cookie
-
       const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
         name: newCategory,
       });

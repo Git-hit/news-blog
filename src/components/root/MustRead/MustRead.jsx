@@ -59,7 +59,7 @@ const MustRead = ({ posts }) => {
         <div className="lg:col-span-2 cursor-pointer" onClick={() => router.push(`/post/${postsToDisplay[0].slug}`)}>
           <div className="rounded-lg overflow-hidden">
             <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${postsToDisplay[0].image}`}
+              src={`/uploads/${postsToDisplay[0].image}`}
               alt={postsToDisplay[0].title}
               width={600}
               height={400}
@@ -115,7 +115,7 @@ const MustRead = ({ posts }) => {
               <div onClick={() => router.push(`/post/${item.slug}`)} key={item.id} className="flex space-x-3 cursor-pointer">
                 <div className="w-28 h-20 overflow-hidden rounded-md flex-shrink-0">
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}`}
+                    src={`/uploads/${item.image}`}
                     alt={item.title}
                     width={112}
                     height={80}

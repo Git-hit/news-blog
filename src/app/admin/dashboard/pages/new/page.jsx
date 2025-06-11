@@ -76,21 +76,6 @@ export default function CreateNewPage() {
       formData.append("robotsTag", robotsTag);
       formData.append("ogTitle", ogTitle);
       formData.append("ogDescription", ogDescription);
-      //   formData.append("ogImage", ogImage);
-      //   formData.append("featured", isFeatured);
-
-      //   selectedCategories.forEach((index) => {
-      //     const category = categories[index - 1];
-      //     if (category) {
-      //       formData.append("categories[]", category.name);
-      //     }
-      //   });
-
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
-
-      // const url = isEdit
-      //   ? `${process.env.NEXT_PUBLIC_API_URL}/api/pages/${postId}`
-      //   : `${process.env.NEXT_PUBLIC_API_URL}/api/pages`;
 
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/pages`;
 

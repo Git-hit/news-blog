@@ -129,7 +129,6 @@ export default function DashboardLayout({ children }) {
       setLoggingOut(true);
       axios.defaults.withCredentials = true;
       axios.defaults.withXSRFToken = true;
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {});
       localStorage.clear();
       router.push("/admin/login");

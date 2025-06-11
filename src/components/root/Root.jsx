@@ -1,25 +1,51 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { DateTime } from "luxon";
 import { useRouter } from "next/navigation";
 import NotificationsMarquee from "./notificationsMarquee";
 
+// const FeaturePostFinder = (data) => {
+//   const featuredPosts = data.filter((item) => item.featured === true);
+
+//   if (featuredPosts.length > 0) {
+//     return { hasFeatured: true, posts: featuredPosts };
+//   }
+
+//   const sortedByCreatedAt = [...data].sort((a, b) => {
+//     const dateA = DateTime.fromISO(a.created_at);
+//     const dateB = DateTime.fromISO(b.created_at);
+//     return dateB.toMillis() - dateA.toMillis();
+//   });
+
+//   return { hasFeatured: false, posts: sortedByCreatedAt.slice(0, 1) };
+// };
+
 const FeaturePostFinder = (data) => {
   const featuredPosts = data.filter((item) => item.featured === true);
 
-  if (featuredPosts.length > 0) {
-    return { hasFeatured: true, posts: featuredPosts };
+  // Sort by latest
+  const sortedFeatured = [...featuredPosts].sort((a, b) => {
+    const dateA = DateTime.fromISO(a.created_at);
+    const dateB = DateTime.fromISO(b.created_at);
+    return dateB.toMillis() - dateA.toMillis();
+  });
+
+  if (sortedFeatured.length > 0) {
+    const mainPost = sortedFeatured[0];
+    const sidePosts = sortedFeatured.slice(1, 5);
+    return { mainPost, sidePosts };
   }
 
+  // If no featured posts, fall back to latest
   const sortedByCreatedAt = [...data].sort((a, b) => {
     const dateA = DateTime.fromISO(a.created_at);
     const dateB = DateTime.fromISO(b.created_at);
     return dateB.toMillis() - dateA.toMillis();
   });
 
-  return { hasFeatured: false, posts: sortedByCreatedAt.slice(0, 1) };
+  return { mainPost: sortedByCreatedAt[0], sidePosts: sortedByCreatedAt.slice(1, 5) };
 };
 
 const Root = ({ mainNews }) => {
@@ -40,10 +66,13 @@ const Root = ({ mainNews }) => {
   const newsToUse = mainNews.length > 0 ? mainNews : [];
 
   // Find featured or latest post(s)
-  const { posts: featuredOrLatestPosts } = FeaturePostFinder(newsToUse);
+  // const { posts: featuredOrLatestPosts } = FeaturePostFinder(newsToUse);
+  const { mainPost, sidePosts } = FeaturePostFinder(newsToUse);
 
+  
   // Get IDs of featured/latest posts to exclude from side news
-  const featuredOrLatestIds = new Set(featuredOrLatestPosts.map((p) => p.id));
+  // const featuredOrLatestIds = new Set(featuredOrLatestPosts.map((p) => p.id));
+  const featuredOrLatestIds = new Set([mainPost?.id, ...sidePosts.map(p => p.id)]);
 
   // Side news = all news excluding featured/latest
   const sideNews = newsToUse
@@ -74,14 +103,14 @@ const Root = ({ mainNews }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:mx-20">
         {/* Left Main News */}
         <div className="lg:col-span-2 relative">
-          {featuredOrLatestPosts.map((item) => (
+          {/* {featuredOrLatestPosts.map((item) => (
             <div
               onClick={() => router.push(`/post/${item.slug}`)}
               key={item.id}
               className="relative h-96 cursor-pointer rounded-lg overflow-hidden mb-6"
             >
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}`}
+                src={`/uploads/${item.image}`}
                 alt={item.title}
                 fill
                 className="object-cover"
@@ -90,23 +119,39 @@ const Root = ({ mainNews }) => {
                 <h2 className="text-xl font-bold leading-tight mb-2">
                   {item.title}
                 </h2>
-                {/* {item.meta_description && (
-                  <p className="text-sm text-gray-700 line-clamp-3">
-                    {item.meta_description}
-                  </p>
-                )} */}
                 <p className="text-xs text-gray-400 mt-2">
                   {formatPosted(item.created_at)} • Read More
                 </p>
               </div>
             </div>
-          ))}
+          ))} */}
+          {mainPost && (
+  <div
+    onClick={() => router.push(`/post/${mainPost.slug}`)}
+    className="relative h-96 cursor-pointer rounded-lg overflow-hidden mb-6"
+  >
+    <Image
+      src={`/uploads/${mainPost.image}`}
+      alt={mainPost.title}
+      fill
+      className="object-cover"
+    />
+    <div className="absolute bottom-6 left-6 bg-white bg-opacity-90 p-5 rounded max-w-md">
+      <h2 className="text-xl font-bold leading-tight mb-2">
+        {mainPost.title}
+      </h2>
+      <p className="text-xs text-gray-400 mt-2">
+        {formatPosted(mainPost.created_at)} • Read More
+      </p>
+    </div>
+  </div>
+)}
         </div>
 
         {/* Right Side News */}
         <div className="space-y-5">
-          {sideNews.length > 0 ? (
-            sideNews.slice(1, 5).map((item) => {
+          {sidePosts.length > 0 ? (
+            sidePosts.map((item) => {
               const categoriesText = () => {
                 if (!item.categories) return "General";
                 try {
@@ -129,7 +174,7 @@ const Root = ({ mainNews }) => {
                   <div className="w-24 h-20 rounded-md overflow-hidden flex-shrink-0">
                     <Image
                       src={
-                        `${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}` ||
+                        `/uploads/${item.image}` ||
                         "/logo1.jpg"
                       }
                       alt={item.title}

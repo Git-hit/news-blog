@@ -58,7 +58,6 @@ export default function Child() {
     try {
       axios.defaults.withCredentials = true;
       axios.defaults.withXSRFToken = true;
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/contact`, formData);
       setStatus("success");
       setFormData({

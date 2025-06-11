@@ -104,7 +104,6 @@ export default function HeaderMenuPage() {
   const saveMenu = async () => {
     setSaving(true);
     try {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`, { menu });
       toast("Menu saved successfully");
     } catch (err) {
@@ -134,10 +133,10 @@ export default function HeaderMenuPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Top Nav Menu (Drag to reorder)</h1>
         <div className="flex gap-2">
-          <Button onClick={() => setOpen(true)}>
+          <Button className="cursor-pointer" onClick={() => setOpen(true)}>
             <Plus className="w-4 h-4 mr-2" /> Add Item
           </Button>
-          <Button onClick={saveMenu} disabled={saving}>
+          <Button className="cursor-pointer" onClick={saveMenu} disabled={saving}>
             {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Save Menu
           </Button>

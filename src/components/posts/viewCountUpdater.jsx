@@ -8,11 +8,10 @@ export default function PostViewCounter({ slug, type }) {
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
     async function incrementViews() {
-        await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
-        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/${type}/${slug}/increment-views`);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/${type}/slug/${slug}`);
     }
     incrementViews();
   }, [slug]);
 
-  return null; // no UI
+  return null;
 }

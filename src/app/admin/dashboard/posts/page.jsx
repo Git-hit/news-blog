@@ -51,7 +51,6 @@ export default function PostsPage() {
 
   const fetchPosts = async () => {
     try {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`);
       setPosts(res.data);
     } catch (err) {
@@ -65,7 +64,6 @@ export default function PostsPage() {
     if (!deleteId) return;
     setDeleting(true);
     try {
-      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sanctum/csrf-cookie`);
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${deleteId}`);
       setPosts(posts.filter((post) => post.id !== deleteId));
       toast({ title: "Post deleted successfully." });
