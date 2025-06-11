@@ -1,0 +1,47 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the app
+        run: npm run build
+
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: 22
+          source: ".next/,public/,package.json,ecosystem.config.js"
+          target: "/var/www/html"
+
+      - name: SSH into VPS and restart app with PM2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: 22
+          script: |
+            cd /var/www/html
+            npm install --omit=dev
+            pm2 reload dtn || pm2 start npm --name dtn -- start

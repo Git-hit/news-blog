@@ -16,7 +16,7 @@ export async function generateMetadata({ params }) {
   // Await params
   const awaitedParams = await params;
 
-  const res = await fetch(`/api/posts/slug/${awaitedParams.slug}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/posts/slug/${awaitedParams.slug}`, {
     cache: "no-store",
   });
 
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const awaitedParams = await params;
 
-  const res = await fetch(`/api/posts/slug/${awaitedParams.slug}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/posts/slug/${awaitedParams.slug}`, {
     cache: "no-store",
   });
 
@@ -77,11 +77,11 @@ export default async function Post({ params }) {
 
   let loading = true;
 
-  const response = await fetch(`/api/news`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/news`, {
     cache: "no-store",
   });
   const news = await response.json();
-  const menuRes = await fetch(`/api/menu`, {
+  const menuRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/menu`, {
     cache: "no-store",
   });
   const menu = await menuRes.json();
