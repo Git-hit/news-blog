@@ -1,13 +1,7 @@
 "use client";
 import './blogStyles.css';
 
-interface BlogPageProps {
-  title?: string;
-  content?: string;
-  image?: string;
-}
-
-export default function BlogPage({ title = 'Untitled', content = '', image = "" }: BlogPageProps) {
+export default function BlogPage({ title = 'Untitled', content = '', image = "" }) {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
