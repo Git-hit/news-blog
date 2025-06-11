@@ -11,14 +11,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// export const metadata = {
-//   icons: {
-//     icon: "/Logo.ico",
-//   },
-// };
-
 export async function generateMetadata() {
-  const res = await fetch(`/api/settings`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
     next: { revalidate: 3600 }, // cache hourly
   });
   const settings = await res.json();
@@ -38,7 +32,7 @@ export async function generateMetadata() {
 }
 
 export default async function RootLayout({ children }) {
-  const res = await fetch(`/api/settings`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
     next: { revalidate: 3600 },
   });
   const settings = await res.json();

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'; // Important!
+
 import axios from "axios";
 
 export async function GET() {
@@ -36,7 +38,7 @@ export async function GET() {
       .map((post) => {
         return `
 <url>
-  <loc>${baseUrl}/${post.slug}</loc>
+  <loc>${baseUrl}/post/${post.slug}</loc>
   <lastmod>${new Date(post.updated_at).toISOString()}</lastmod>
   <changefreq>weekly</changefreq>
   <priority>0.8</priority>
