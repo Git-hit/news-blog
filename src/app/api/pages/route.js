@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import pool from '../../../lib/db';
 import formidable from 'formidable';
-import fs from 'fs';
+// import fs from 'fs';
 import path from 'path';
 import { promises as fsp } from 'fs';
 
