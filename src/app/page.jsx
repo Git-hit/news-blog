@@ -1,7 +1,7 @@
 import Homepage from './Homepage';
 
 export async function generateMetadata() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
+  const res = await fetch(`/api/settings`, {
     next: { revalidate: 3600 }, // cache for 1 hour
   });
   const settings = await res.json();
