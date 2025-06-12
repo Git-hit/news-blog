@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { promises as fsp } from 'fs';
 import formidable from 'formidable';
+import { Readable } from 'stream';
 
 export const config = {
   api: {
@@ -13,7 +14,6 @@ export const config = {
 
 // Convert web request to Node-readable stream
 function toNodeRequest(req) {
-  const { Readable } = require('stream');
   const body = Readable.from(req.body);
   const headers = {};
 
