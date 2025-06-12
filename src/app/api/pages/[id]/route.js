@@ -68,7 +68,7 @@ export async function POST(req, { params }) {
     });
 
   try {
-    const [fields, files] = await new Promise((resolve, reject) => {
+    const [fields, _] = await new Promise((resolve, reject) => {
       form.parse(nodeReq, (err, fields, files) => {
         if (err) reject(err);
         else resolve([fields, files]);
