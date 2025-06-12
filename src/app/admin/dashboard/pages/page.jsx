@@ -33,7 +33,6 @@ export default function AllPages() {
 
   useEffect(() => {
     setRole(localStorage.getItem("role"));
-    // console.log(localStorage.getItem("role"))
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
 
@@ -65,18 +64,6 @@ export default function AllPages() {
     }
   };
 
-  // const handleDelete = async (id) => {
-  //   if (!confirm("Are you sure you want to delete this page?")) return;
-
-  //   try {
-  //     await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/pages/${id}`);
-  //     setPages(pages.filter((page) => page.id !== id));
-  //   } catch (err) {
-  //     console.error("Delete failed", err);
-  //     toast("Failed to delete page");
-  //   }
-  // };
-
   const deletePage = async () => {
     if (!deletingId) return;
 
@@ -87,7 +74,6 @@ export default function AllPages() {
       setPages(pages.filter((page) => page.id !== deletingId));
       toast("Page deleted successfully.");
     } catch (err) {
-      // console.error("Delete failed", err);
       toast("Failed to delete page");
     } finally {
       setDeletingId(null);

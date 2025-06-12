@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { toast } from "sonner"; // Make sure this is correct in your setup
+import { toast } from "sonner";
 
 export default function PostsPage() {
   const [posts, setPosts] = useState([]);
@@ -94,7 +94,7 @@ export default function PostsPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 className="text-3xl font-bold tracking-tight">📄 All Posts</h1>
-        {permissions.includes("create_edit_post") && (
+        {(permissions.includes("create_edit_post") || localStorage.getItem("role") === "admin") && (
           <Link href="/admin/dashboard/posts/new">
             <Button className="text-sm">+ New Post</Button>
           </Link>

@@ -44,6 +44,8 @@ export default function EditPage() {
     const allowed =
       localStorage.getItem("role") === "admin" ||
       localPerms.includes("create_edit_page");
+
+      // console.log(allowed)
     setAllowed(allowed);
     if(!allowed) setPageDataLoading(false);
     const fetchPage = async () => {

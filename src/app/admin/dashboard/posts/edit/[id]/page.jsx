@@ -19,7 +19,7 @@ export default function EditPostPage() {
       setPost(res.data.post);
     }
     const localPerms = JSON.parse(localStorage.getItem("permissions") || "[]");
-    const allowed = localPerms.includes("create_edit_post")
+    const allowed = localStorage.getItem("role") === "admin" || localPerms.includes("create_edit_post")
     setAllowed(allowed);
     if (allowed) fetchPost();
   }, [id]);

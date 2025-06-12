@@ -11,6 +11,25 @@ export const config = {
   },
 };
 
+// Convert web request to Node-readable stream
+function toNodeRequest(req) {
+  const { Readable } = require('stream');
+  const body = Readable.from(req.body);
+  const headers = {};
+
+  req.headers.forEach((value, key) => {
+    headers[key.toLowerCase()] = value;
+  });
+
+  Object.assign(body, {
+    headers,
+    method: req.method,
+    url: req.url,
+  });
+
+  return body;
+}
+
 // DELETE POST + delete image & og image
 export async function DELETE(_, { params }) {
   const { id } = params;
@@ -49,30 +68,31 @@ export async function DELETE(_, { params }) {
   }
 }
 
-// PUT: Update post with optional image/og_image replacement
-export async function PUT(req, { params }) {
+// POST: Update post with optional image/og_image replacement
+export async function POST(req, { params }) {
   const { id } = params;
+  const nodeReq = toNodeRequest(req); // 👈 this is key
 
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+  const uploadDir = path.join(process.cwd(), "public", "uploads");
   await fsp.mkdir(uploadDir, { recursive: true });
 
   const form = formidable({
     uploadDir,
     keepExtensions: true,
+    maxFileSize: 20 * 1024 * 1024,
     filename: (name, ext, part) => {
-      const timestamp = Date.now();
-      return `${timestamp}-${part.originalFilename}`;
+      return `${Date.now()}-${part.originalFilename}`;
     },
   });
 
-  try {
-    const [fields, files] = await new Promise((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve([fields, files]);
-      });
+  const [fields, files] = await new Promise((resolve, reject) => {
+    form.parse(nodeReq, (err, fields, files) => {
+      if (err) reject(err);
+      else resolve([fields, files]);
     });
+  });
 
+  try {
     const {
       title,
       content,
@@ -95,23 +115,22 @@ export async function PUT(req, { params }) {
 
     const client = await pool.connect();
 
-    // Get old image paths to delete if replaced
-    const oldPost = await client.query('SELECT image, og_image FROM posts WHERE id = $1', [id]);
+    const oldPost = await client.query("SELECT image, og_image FROM posts WHERE id = $1", [id]);
     if (oldPost.rows.length === 0) {
       client.release();
-      return NextResponse.json({ message: 'Post not found' }, { status: 404 });
+      return NextResponse.json({ message: "Post not found" }, { status: 404 });
     }
 
     const oldImage = oldPost.rows[0].image;
     const oldOgImage = oldPost.rows[0].og_image;
 
     if (newImage && oldImage) {
-      const oldPath = path.join(process.cwd(), 'public', oldImage);
+      const oldPath = path.join(process.cwd(), "public", oldImage);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 
     if (newOgImage && oldOgImage) {
-      const oldPath = path.join(process.cwd(), 'public', oldOgImage);
+      const oldPath = path.join(process.cwd(), "public", oldOgImage);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 
@@ -132,7 +151,7 @@ export async function PUT(req, { params }) {
         og_image = COALESCE($13, og_image),
         featured = $14,
         updated_at = NOW()
-       WHERE id = $15`,
+      WHERE id = $15`,
       [
         title,
         content,
@@ -142,21 +161,21 @@ export async function PUT(req, { params }) {
         metaDescription,
         focusKeyword,
         canonicalUrl,
-        robotsTag || 'index, follow',
+        robotsTag || "index, follow",
         ogTitle,
         ogDescription,
         imageUrl,
         ogImageUrl,
-        featured === 'true' ? 1 : 0,
+        featured === "true" ? 1 : 0,
         id,
       ]
     );
 
     client.release();
-    return NextResponse.json({ message: 'Post updated successfully' });
+    return NextResponse.json({ message: "Post updated successfully" });
   } catch (err) {
-    console.error('Update error:', err);
-    return NextResponse.json({ message: 'Failed to update post' }, { status: 500 });
+    console.error("Update error:", err);
+    return NextResponse.json({ message: "Failed to update post" }, { status: 500 });
   }
 }
 

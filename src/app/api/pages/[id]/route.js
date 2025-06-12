@@ -11,6 +11,25 @@ export const config = {
   },
 };
 
+// Convert web request to Node-readable stream
+function toNodeRequest(req) {
+  const { Readable } = require('stream');
+  const body = Readable.from(req.body);
+  const headers = {};
+
+  req.headers.forEach((value, key) => {
+    headers[key.toLowerCase()] = value;
+  });
+
+  Object.assign(body, {
+    headers,
+    method: req.method,
+    url: req.url,
+  });
+
+  return body;
+}
+
 // GET one page by ID
 export async function GET(_, { params }) {
   const { id } = params;
@@ -32,21 +51,25 @@ export async function GET(_, { params }) {
 }
 
 // PUT update a page
-export async function PUT(req, { params }) {
+export async function POST(req, { params }) {
   const { id } = params;
+  const nodeReq = toNodeRequest(req);
 
   const uploadDir = path.join(process.cwd(), 'public', 'uploads');
   await fsp.mkdir(uploadDir, { recursive: true });
 
   const form = formidable({
-    uploadDir,
-    keepExtensions: true,
-    filename: (name, ext, part) => `${Date.now()}-${part.originalFilename}`,
-  });
+      uploadDir,
+      keepExtensions: true,
+      maxFileSize: 20 * 1024 * 1024,
+      filename: (name, ext, part) => {
+        return `${Date.now()}-${part.originalFilename}`;
+      },
+    });
 
   try {
     const [fields, files] = await new Promise((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
+      form.parse(nodeReq, (err, fields, files) => {
         if (err) reject(err);
         else resolve([fields, files]);
       });
@@ -65,26 +88,26 @@ export async function PUT(req, { params }) {
       ogDescription,
     } = fields;
 
-    const newImage = files.image?.[0];
-    const newOgImage = files.ogImage?.[0];
-    const imageUrl = newImage ? `/uploads/${path.basename(newImage.filepath)}` : null;
-    const ogImageUrl = newOgImage ? `/uploads/${path.basename(newOgImage.filepath)}` : null;
+    // const newImage = files.image?.[0];
+    // const newOgImage = files.ogImage?.[0];
+    // const imageUrl = newImage ? `/uploads/${path.basename(newImage.filepath)}` : null;
+    // const ogImageUrl = newOgImage ? `/uploads/${path.basename(newOgImage.filepath)}` : null;
 
     const client = await pool.connect();
-    const result = await client.query('SELECT image, og_image FROM pages WHERE id = $1', [id]);
-    if (result.rows.length === 0) {
-      client.release();
-      return NextResponse.json({ message: 'Page not found' }, { status: 404 });
-    }
+    // const result = await client.query('SELECT image, og_image FROM pages WHERE id = $1', [id]);
+    // if (result.rows.length === 0) {
+    //   client.release();
+    //   return NextResponse.json({ message: 'Page not found' }, { status: 404 });
+    // }
 
-    const old = result.rows[0];
-    const deleteFile = (file) => {
-      const filePath = path.join(process.cwd(), 'public', file);
-      if (file && fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    };
+    // const old = result.rows[0];
+    // const deleteFile = (file) => {
+    //   const filePath = path.join(process.cwd(), 'public', file);
+    //   if (file && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    // };
 
-    if (newImage) deleteFile(old.image);
-    if (newOgImage) deleteFile(old.og_image);
+    // if (newImage) deleteFile(old.image);
+    // if (newOgImage) deleteFile(old.og_image);
 
     await client.query(
       `UPDATE pages SET
@@ -98,10 +121,8 @@ export async function PUT(req, { params }) {
         robots_tag = $8,
         og_title = $9,
         og_description = $10,
-        image = COALESCE($11, image),
-        og_image = COALESCE($12, og_image),
         updated_at = NOW()
-      WHERE id = $13`,
+      WHERE id = $11`,
       [
         title,
         content,
@@ -113,8 +134,8 @@ export async function PUT(req, { params }) {
         robotsTag || 'index, follow',
         ogTitle,
         ogDescription,
-        imageUrl,
-        ogImageUrl,
+        // imageUrl,
+        // ogImageUrl,
         id,
       ]
     );
