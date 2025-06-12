@@ -63,8 +63,8 @@ export default function BlogPage({
   return (
     <main className="max-w-7xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
-      <div className="flex gap-7 min-h-screen">
-        <div className="w-2/3">
+      <div className="flex md:gap-7 min-h-screen">
+        <div className="md:w-2/3">
           {image && (
             <img src={`/uploads/${image}`} />
           )}
@@ -149,7 +149,7 @@ export default function BlogPage({
             )}
           </section>
         </div>
-        <div className="min-h-screen w-1/3">
+        <div className="min-h-screen md:w-1/3">
           <div className="hidden md:block md:sticky top-0">
             {mostPopular && (
               <h2 className="text-center text-red-700 mb-5">MOST POPULAR</h2>

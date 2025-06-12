@@ -1,19 +1,8 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export async function generateMetadata() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
-    next: { revalidate: 3600 }, // cache hourly
+    next: { revalidate: 3600 },
   });
   const settings = await res.json();
   const get = (key) => settings[key];
@@ -36,7 +25,6 @@ export default async function RootLayout({ children }) {
     next: { revalidate: 3600 },
   });
   const settings = await res.json();
-  // console.log(settings)
   const get = (key) => settings[key];
 
   const gaID = get('google_analytics_id');

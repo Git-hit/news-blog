@@ -1,24 +1,20 @@
 import { notFound } from "next/navigation";
-// import Layout from "./layout";
 import Navbar from "../../../components/Navbar/Navbar";
 import NewsFooter from "../../../components/Footer/Footer";
-import TopIndex from "../../../components/Blog/TopIndex";
 import Upnext from "../../../components/Blog/Upnext";
-import MostRead from "../../../components/news/MostRead";
-import TariffNews from "../../../components/Blog/TariffNews";
 import BlogPage from "../../../components/Blog/BlogPage";
 import PostViewCounter from "../../../components/posts/viewCountUpdater";
 import { decode } from "he";
 
-// const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export async function generateMetadata({ params }) {
-  // Await params
   const awaitedParams = await params;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`,
+    {
+      next: { revalidate: 60 },
+    }
+  );
 
   if (!res.ok) return {};
 
@@ -42,13 +38,22 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const awaitedParams = await params;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`, {
-    cache: "no-store",
-  });
+  const [postRes, newsRes, menuRes] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`,
+      { cache: "no-store" }
+    ),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, { cache: "no-store" }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`, { cache: "no-store" }),
+  ]);
 
-  if (!res.ok) return notFound();
+  if (!postRes.ok) return notFound();
 
-  const { post, comments, allPosts } = await res.json();
+  const [{ post, comments, allPosts }, news, menu] = await Promise.all([
+    postRes.json(),
+    newsRes.json(),
+    menuRes.json(),
+  ]);
 
   const postData = {
     title: post.title,
@@ -59,60 +64,43 @@ export default async function Post({ params }) {
     allPosts,
   };
 
-  const processedHtml = postData.content.replace(/<p><\/p>/g, '<p><br /></p>');
+  const processedHtml = postData.content.replace(/<p><\/p>/g, "<p><br /></p>");
 
   const withDecodedSnippets = processedHtml.replace(
-  /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
-  (_, encodedContent) => {
-    const decoded = decode(encodedContent);
-    return `
+    /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
+    (_, encodedContent) => {
+      const decoded = decode(encodedContent);
+      return `
       <div style="max-width: 100%; overflow: hidden;">
         <div style="position: relative; width: 100% height: auto;">
-          ${decoded.replace(/width="[^"]*"/g, 'width=100%').replace(/height="[^"]*"/g, `style="min-height:400px"`)}
+          ${decoded
+            .replace(/width="[^"]*"/g, "width=100%")
+            .replace(/height="[^"]*"/g, `style="min-height:400px"`)}
         </div>
       </div>
     `;
-  }
-);
-
-  let loading = true;
-
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
-    cache: "no-store",
-  });
-  const news = await response.json();
-  const menuRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`, {
-    cache: "no-store",
-  });
-  const menu = await menuRes.json();
-  loading = false;
+    }
+  );
 
   return (
-    <>
-      {loading ? (
-        <div className="flex h-screen justify-center items-center">
-          <div className="animate-spin border-2 border-slate-900 border-b-transparent rounded-full size-10"></div>
-        </div>
-      ) : (
-        <div>
-          <Navbar posts={news} menu={menu} />
-          {/* <TopIndex /> */}
-          <PostViewCounter slug={awaitedParams.slug} type={"posts"} />
-          <BlogPage
-            title={postData.title}
-            content={withDecodedSnippets}
-            image={postData.image}
-            slug={awaitedParams.slug}
-            allComments={postData.comments}
-            allPosts={postData.allPosts}
-          />
-          <Upnext posts={news} category={awaitedParams.slug} />
-          {/* <MostRead mostReadData={postData} category={} /> */}
-          {/* <TariffNews /> */}
-          <NewsFooter />
-          <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
-        </div>
-      )}
-    </>
+    <div>
+      <Navbar posts={news} menu={menu} />
+      <PostViewCounter slug={awaitedParams.slug} type={"posts"} />
+      <BlogPage
+        title={postData.title}
+        content={withDecodedSnippets}
+        image={postData.image}
+        slug={awaitedParams.slug}
+        allComments={postData.comments}
+        allPosts={postData.allPosts}
+      />
+      <Upnext posts={news} category={awaitedParams.slug} />
+      <NewsFooter />
+      <script
+        async
+        src="https://platform.twitter.com/widgets.js"
+        charSet="utf-8"
+      ></script>
+    </div>
   );
 }

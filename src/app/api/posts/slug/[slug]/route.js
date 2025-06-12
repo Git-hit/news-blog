@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import pool from '../../../../../lib/db';
 
 // GET post by slug + comments + 5 popular posts
-export async function GET(_, { params }) {
-  const { slug } = params;
+export async function GET(_, context) {
+  const { slug } = context.params;
 
   console.log("Slug: ", slug);
 

@@ -1,10 +1,10 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import Root from "../components/root/Root";
 import LatestNews from "../components/root/LatestNews/LatestNews";
 import MustRead from "../components/root/MustRead/MustRead";
-import WeeklyHighlight from "../components/root/WeeklyHighlight/WeeklyHighlight";
 import NewsFooter from "../components/Footer/Footer";
 
 const Homepage = () => {
@@ -52,7 +52,6 @@ const Homepage = () => {
           <Root mainNews={news} />
           <LatestNews news={news} />
           <MustRead posts={news} />
-          {/* <WeeklyHighlight /> */}
           <NewsFooter />
         </div>
       )}
