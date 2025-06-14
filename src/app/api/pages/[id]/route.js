@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 import formidable from 'formidable';
 import { Readable } from 'stream';
 
-export default async function parseForm(req, uploadDir) {
+async function parseForm(req, uploadDir) {
   const form = formidable({
     uploadDir,
     keepExtensions: true,
