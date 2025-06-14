@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 
 // GET /api/categories
 export async function GET() {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM categories ORDER BY created_at DESC');
-    client.release();
+    const client = await clientPromise;
+    const db = client.db();
 
-    return NextResponse.json(result.rows);
+    const categories = await db
+      .collection('categories')
+      .find({})
+      .sort({ created_at: -1 })
+      .toArray();
+
+    return NextResponse.json(categories);
   } catch (err) {
     console.error('Fetch categories error:', err);
     return NextResponse.json({ message: 'Failed to fetch categories' }, { status: 500 });

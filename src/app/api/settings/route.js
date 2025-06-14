@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 
 // GET /api/settings
 export async function GET() {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM settings');
-    client.release();
+    const client = await clientPromise;
+    const db = client.db();
+    const settingsCollection = db.collection('settings');
 
-    const settings = result.rows.reduce((acc, row) => {
-      acc[row.key] = row.value;
+    const allSettings = await settingsCollection.find().toArray();
+
+    const settings = allSettings.reduce((acc, item) => {
+      acc[item.key] = item.value;
       return acc;
     }, {});
 
@@ -25,21 +27,22 @@ export async function POST(req) {
   try {
     const settings = await req.json();
 
-    const client = await pool.connect();
+    const client = await clientPromise;
+    const db = client.db();
+    const settingsCollection = db.collection('settings');
 
-    for (const [key, value] of Object.entries(settings)) {
-      await client.query(
-        `
-          INSERT INTO settings (key, value)
-          VALUES ($1, $2)
-          ON CONFLICT (key)
-          DO UPDATE SET value = EXCLUDED.value
-        `,
-        [key, value]
-      );
+    const bulkOps = Object.entries(settings).map(([key, value]) => ({
+      updateOne: {
+        filter: { key },
+        update: { $set: { key, value } },
+        upsert: true,
+      },
+    }));
+
+    if (bulkOps.length > 0) {
+      await settingsCollection.bulkWrite(bulkOps);
     }
 
-    client.release();
     return NextResponse.json({ message: 'Settings updated successfully.' });
   } catch (err) {
     console.error('Update settings error:', err);

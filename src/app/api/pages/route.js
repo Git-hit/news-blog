@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 import formidable from 'formidable';
-// import fs from 'fs';
 import path from 'path';
 import { promises as fsp } from 'fs';
 
@@ -14,10 +13,13 @@ export const config = {
 // GET all pages
 export async function GET() {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM pages ORDER BY created_at DESC');
-    client.release();
-    return NextResponse.json(result.rows);
+    const client = await clientPromise;
+    const db = client.db();
+    const pagesCollection = db.collection('pages');
+
+    const pages = await pagesCollection.find().sort({ created_at: -1 }).toArray();
+
+    return NextResponse.json(pages);
   } catch (err) {
     console.error('Fetch error:', err);
     return NextResponse.json({ message: 'Failed to fetch pages' }, { status: 500 });
@@ -58,38 +60,37 @@ export async function POST(req) {
 
     const image = files.image?.[0];
     const ogImage = files.ogImage?.[0];
-    const imageUrl = image ? `/uploads/${path.basename(image.filepath)}` : null;
-    const ogImageUrl = ogImage ? `/uploads/${path.basename(ogImage.filepath)}` : null;
+    const imageUrl = image ? `${path.basename(image.filepath)}` : null;
+    const ogImageUrl = ogImage ? `${path.basename(ogImage.filepath)}` : null;
 
-    const client = await pool.connect();
-    const result = await client.query(
-      `INSERT INTO pages (
-        title, content, meta_title, meta_description, focus_keyword,
-        slug, canonical_url, robots_tag, og_title, og_description,
-        image, og_image, created_at
-      ) VALUES (
-        $1, $2, $3, $4, $5,
-        $6, $7, $8, $9, $10,
-        $11, $12, NOW()
-      ) RETURNING *`,
-      [
-        title,
-        content,
-        metaTitle,
-        metaDescription,
-        focusKeyword,
-        slug,
-        canonicalUrl,
-        robotsTag || 'index, follow',
-        ogTitle,
-        ogDescription,
-        imageUrl,
-        ogImageUrl,
-      ]
-    );
+    const client = await clientPromise;
+    const db = client.db();
+    const pagesCollection = db.collection('pages');
 
-    client.release();
-    return NextResponse.json({ page: result.rows[0], message: 'Page created successfully' }, { status: 201 });
+    // Manually generate integer ID if needed (optional)
+    const last = await pagesCollection.find().sort({ id: -1 }).limit(1).next();
+    const newId = last ? last.id + 1 : 1;
+
+    const pageDoc = {
+      id: newId,
+      title,
+      content,
+      meta_title: metaTitle,
+      meta_description: metaDescription,
+      focus_keyword: focusKeyword,
+      slug,
+      canonical_url: canonicalUrl,
+      robots_tag: robotsTag || 'index, follow',
+      og_title: ogTitle,
+      og_description: ogDescription,
+      image: imageUrl,
+      og_image: ogImageUrl,
+      created_at: new Date(),
+    };
+
+    await pagesCollection.insertOne(pageDoc);
+
+    return NextResponse.json({ page: pageDoc, message: 'Page created successfully' }, { status: 201 });
   } catch (err) {
     console.error('Create error:', err);
     return NextResponse.json({ message: 'Failed to create page' }, { status: 500 });

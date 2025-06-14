@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 
 // GET /api/categories
 export async function GET() {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM categories ORDER BY created_at DESC');
-    client.release();
+    const client = await clientPromise;
+    const db = client.db();
 
-    return NextResponse.json(result.rows);
+    const categories = await db
+      .collection('categories')
+      .find()
+      .sort({ created_at: -1 }) // DESC
+      .toArray();
+
+    return NextResponse.json(categories);
   } catch (err) {
     console.error('Fetch categories error:', err);
     return NextResponse.json({ message: 'Failed to fetch categories' }, { status: 500 });
@@ -25,24 +30,26 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Name is required and must be a string' }, { status: 400 });
     }
 
-    const client = await pool.connect();
+    const client = await clientPromise;
+    const db = client.db();
+    const categories = db.collection('categories');
 
     // Check for duplicate name
-    const exists = await client.query('SELECT 1 FROM categories WHERE name = $1', [name]);
-    if (exists.rowCount > 0) {
-      client.release();
+    const exists = await categories.findOne({ name });
+    if (exists) {
       return NextResponse.json({ message: 'Category name must be unique' }, { status: 409 });
     }
 
-    const result = await client.query(
-      `INSERT INTO categories (name, created_at, updated_at)
-       VALUES ($1, NOW(), NOW())
-       RETURNING *`,
-      [name]
-    );
+    const now = new Date();
+    const result = await categories.insertOne({
+      name,
+      created_at: now,
+      updated_at: now,
+    });
 
-    client.release();
-    return NextResponse.json(result.rows[0], { status: 201 });
+    const inserted = await categories.findOne({ _id: result.insertedId });
+
+    return NextResponse.json(inserted, { status: 201 });
   } catch (err) {
     console.error('Create category error:', err);
     return NextResponse.json({ message: 'Failed to create category' }, { status: 500 });

@@ -148,7 +148,7 @@ export default function PostsPage() {
                       ) : (
                         <>
                           <Link
-                            href={`/admin/dashboard/posts/edit/${post.id}`}
+                            href={`/admin/dashboard/posts/edit/${post._id}`}
                             className="text-yellow-600 hover:underline text-sm"
                           >
                             Edit

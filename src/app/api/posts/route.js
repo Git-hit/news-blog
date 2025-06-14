@@ -1,18 +1,9 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
-
-export async function GET() {
-  try {
-    const client = await pool.connect();
-    const res = await client.query('SELECT * FROM posts ORDER BY created_at DESC');
-    client.release();
-
-    return NextResponse.json(res.rows);
-  } catch (err) {
-    console.error('Error fetching posts:', err);
-    return NextResponse.json({ message: 'Failed to fetch posts' }, { status: 500 });
-  }
-}
+import clientPromise from '@/src/lib/mongodb';
+// import fs from 'fs';
+import path from 'path';
+import formidable from 'formidable';
+import { promises as fsp } from 'fs';
 
 export const config = {
   api: {
@@ -20,17 +11,31 @@ export const config = {
   },
 };
 
+// GET all posts (latest first)
+export async function GET() {
+  try {
+    const client = await clientPromise;
+    const db = client.db();
+    const postsCollection = db.collection('posts');
+
+    const posts = await postsCollection.find({}).sort({ created_at: -1 }).toArray();
+
+    return NextResponse.json(posts);
+  } catch (err) {
+    console.error('Error fetching posts:', err);
+    return NextResponse.json({ message: 'Failed to fetch posts' }, { status: 500 });
+  }
+}
+
+// POST new post
 export async function POST(req) {
   const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  await fs.mkdir(uploadDir, { recursive: true });
+  await fsp.mkdir(uploadDir, { recursive: true });
 
   const form = formidable({
     uploadDir,
     keepExtensions: true,
-    filename: (name, ext, part) => {
-      const timestamp = Date.now();
-      return `${timestamp}-${part.originalFilename}`;
-    },
+    filename: (name, ext, part) => `${Date.now()}-${part.originalFilename}`,
   });
 
   try {
@@ -41,7 +46,6 @@ export async function POST(req) {
       });
     });
 
-    // Extract form fields
     const {
       title,
       content,
@@ -60,44 +64,35 @@ export async function POST(req) {
     const image = files.image?.[0];
     const ogImage = files.ogImage?.[0];
 
-    const imageUrl = image ? `/uploads/${path.basename(image.filepath)}` : null;
-    const ogImageUrl = ogImage ? `/uploads/${path.basename(ogImage.filepath)}` : null;
+    const imageUrl = image ? `${path.basename(image.filepath)}` : null;
+    const ogImageUrl = ogImage ? `${path.basename(ogImage.filepath)}` : null;
 
-    const client = await pool.connect();
-    const result = await client.query(
-      `INSERT INTO posts (
-        title, content, slug, categories,
-        meta_title, meta_description, focus_keyword,
-        canonical_url, robots_tag, og_title, og_description,
-        image, og_image, featured, created_at
-      ) VALUES (
-        $1, $2, $3, $4,
-        $5, $6, $7,
-        $8, $9, $10, $11,
-        $12, $13, $14, NOW()
-      ) RETURNING *`,
-      [
-        title,
-        content,
-        slug,
-        categories ? JSON.stringify(JSON.parse(categories)) : null,
-        metaTitle,
-        metaDescription,
-        focusKeyword,
-        canonicalUrl,
-        robotsTag || 'index, follow',
-        ogTitle,
-        ogDescription,
-        imageUrl,
-        ogImageUrl,
-        featured === 'true' ? 1 : 0,
-      ]
-    );
+    const client = await clientPromise;
+    const db = client.db();
+    const postsCollection = db.collection('posts');
 
-    client.release();
+    const postData = {
+      title,
+      content,
+      slug,
+      categories: categories ? JSON.parse(categories) : [],
+      meta_title: metaTitle,
+      meta_description: metaDescription,
+      focus_keyword: focusKeyword,
+      canonical_url: canonicalUrl,
+      robots_tag: robotsTag || 'index, follow',
+      og_title: ogTitle,
+      og_description: ogDescription,
+      image: imageUrl,
+      og_image: ogImageUrl,
+      featured: featured === 'true',
+      created_at: new Date(),
+    };
+
+    const result = await postsCollection.insertOne(postData);
 
     return NextResponse.json(
-      { post: result.rows[0], message: 'Post created successfully' },
+      { post: { _id: result.insertedId, ...postData }, message: 'Post created successfully' },
       { status: 201 }
     );
   } catch (err) {

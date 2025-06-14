@@ -58,7 +58,7 @@ const LatestNews = ({ news }) => {
             >
               {item.image ? (
                 <Image
-                  src={`/uploads/${item.image}`}
+                  src={`${item.image}`}
                   alt={item.title}
                   width={500}
                   height={300}

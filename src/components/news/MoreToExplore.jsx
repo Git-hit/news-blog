@@ -48,7 +48,7 @@ const MoreToExplore = ({ exploreData, category }) => {
               className="cursor-pointer bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
             >
               <Image
-                src={`/uploads/${item.image}`}
+                src={`${item.image}`}
                 alt={item.title}
                 width={400}
                 height={250}

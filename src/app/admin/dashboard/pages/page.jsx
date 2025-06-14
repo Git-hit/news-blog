@@ -157,7 +157,7 @@ export default function AllPages() {
                       ) : (
                         <>
                           <Link
-                            href={`/admin/dashboard/pages/edit/${page.id}`}
+                            href={`/admin/dashboard/pages/edit/${page._id}`}
                             className="text-yellow-600 hover:underline text-sm"
                           >
                             Edit

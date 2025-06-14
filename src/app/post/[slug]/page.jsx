@@ -1,20 +1,16 @@
 import { notFound } from "next/navigation";
-import Navbar from "../../../components/Navbar/Navbar";
-import NewsFooter from "../../../components/Footer/Footer";
-import Upnext from "../../../components/Blog/Upnext";
-import BlogPage from "../../../components/Blog/BlogPage";
-import PostViewCounter from "../../../components/posts/viewCountUpdater";
+import Navbar from "@/src/components/Navbar/Navbar";
+import NewsFooter from "@/src/components/Footer/Footer";
+import Upnext from "@/src/components/Blog/Upnext";
+import BlogPage from "@/src/components/Blog/BlogPage";
+import PostViewCounter from "@/src/components/posts/viewCountUpdater";
 import { decode } from "he";
+import TwitterScriptLoader from "../../../components/posts/twitterScriptLoader";
 
 export async function generateMetadata({ params }) {
-  const awaitedParams = await params;
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`,
-    {
-      next: { revalidate: 60 },
-    }
-  );
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${params.slug}`, {
+    next: { revalidate: 3600 },
+  });
 
   if (!res.ok) return {};
 
@@ -26,7 +22,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: post.og_title || post.meta_title || post.title,
       description: post.og_description || post.meta_description,
-      images: post.og_image ? [`/uploads/${post.og_image}`] : [],
+      images: post.og_image ? [post.og_image] : [],
     },
     robots: post.robots_tag,
     alternates: {
@@ -36,15 +32,18 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Post({ params }) {
-  const awaitedParams = await params;
+  const slug = params.slug;
 
   const [postRes, newsRes, menuRes] = await Promise.all([
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${awaitedParams.slug}`,
-      { cache: "no-store" }
-    ),
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, { cache: "no-store" }),
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`, { cache: "no-store" }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${slug}`, {
+      cache: "no-store",
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`, {
+      next: { revalidate: 300 },
+    }),
   ]);
 
   if (!postRes.ok) return notFound();
@@ -55,52 +54,38 @@ export default async function Post({ params }) {
     menuRes.json(),
   ]);
 
-  const postData = {
-    title: post.title,
-    content: post.content,
-    image: post.image,
-    category: post.category,
-    comments,
-    allPosts,
-  };
-
-  const processedHtml = postData.content.replace(/<p><\/p>/g, "<p><br /></p>");
-
-  const withDecodedSnippets = processedHtml.replace(
-    /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
-    (_, encodedContent) => {
-      const decoded = decode(encodedContent);
+  const cleanContent = post.content
+    .replace(/<p><\/p>/g, "<p><br /></p>")
+    .replace(/<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g, (_, encoded) => {
+      const decoded = decode(encoded);
+      const sanitized = decoded
+        .replace(/width="[^"]*"/g, `width="100%"`)
+        .replace(/height="[^"]*"/g, `style="min-height:400px"`);
       return `
-      <div style="max-width: 100%; overflow: hidden;">
-        <div style="position: relative; width: 100% height: auto;">
-          ${decoded
-            .replace(/width="[^"]*"/g, "width=100%")
-            .replace(/height="[^"]*"/g, `style="min-height:400px"`)}
-        </div>
-      </div>
-    `;
-    }
-  );
+        <div style="max-width: 100%; overflow: hidden;">
+          <div style="position: relative; width: 100%; height: auto;">
+            ${sanitized}
+          </div>
+        </div>`;
+    });
 
   return (
     <div>
       <Navbar posts={news} menu={menu} />
-      <PostViewCounter slug={awaitedParams.slug} type={"posts"} />
+      <PostViewCounter slug={slug} type="posts" />
       <BlogPage
-        title={postData.title}
-        content={withDecodedSnippets}
-        image={postData.image}
-        slug={awaitedParams.slug}
-        allComments={postData.comments}
-        allPosts={postData.allPosts}
+        title={post.title}
+        content={cleanContent}
+        image={post.image}
+        slug={slug}
+        allComments={comments}
+        allPosts={allPosts}
       />
-      <Upnext posts={news} category={awaitedParams.slug} />
+      <Upnext posts={news} category={slug} />
       <NewsFooter />
-      <script
-        async
-        src="https://platform.twitter.com/widgets.js"
-        charSet="utf-8"
-      ></script>
+      {/* Move Twitter widget loading to client side if not needed at SSR */}
+      {/* <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" /> */}
+      <TwitterScriptLoader />
     </div>
   );
 }

@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 
 // GET /api/footer-settings
 export async function GET() {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM footer_settings LIMIT 1');
-    client.release();
+    const client = await clientPromise;
+    const db = client.db();
 
-    return NextResponse.json(result.rows[0] || {});
+    const footer = await db
+      .collection('footer_settings')
+      .findOne({}, { sort: { updated_at: -1 } });
+
+    return NextResponse.json(footer || {});
   } catch (err) {
     console.error('Fetch footer settings error:', err);
     return NextResponse.json({ message: 'Failed to fetch footer settings' }, { status: 500 });
@@ -24,25 +27,29 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Invalid sections format' }, { status: 400 });
     }
 
-    const client = await pool.connect();
-    const existing = await client.query('SELECT id FROM footer_settings LIMIT 1');
+    const client = await clientPromise;
+    const db = client.db();
 
-    if (existing.rows.length > 0) {
-      // Update existing row
-      await client.query(
-        `UPDATE footer_settings SET sections = $1, updated_at = NOW() WHERE id = $2`,
-        [JSON.stringify(sections), existing.rows[0].id]
+    const now = new Date();
+
+    // Check if a document already exists
+    const existing = await db.collection('footer_settings').findOne();
+
+    if (existing) {
+      // Update the existing document
+      await db.collection('footer_settings').updateOne(
+        { _id: existing._id },
+        { $set: { sections, updated_at: now } }
       );
     } else {
-      // Create new row
-      await client.query(
-        `INSERT INTO footer_settings (sections, created_at, updated_at)
-         VALUES ($1, NOW(), NOW())`,
-        [JSON.stringify(sections)]
-      );
+      // Insert a new document
+      await db.collection('footer_settings').insertOne({
+        sections,
+        created_at: now,
+        updated_at: now,
+      });
     }
 
-    client.release();
     return NextResponse.json({ message: 'Footer updated' });
   } catch (err) {
     console.error('Update footer settings error:', err);

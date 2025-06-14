@@ -5,21 +5,6 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Search, Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-
-// const navLinks = [
-//   { name: "Home", href: "/" },
-//   { name: "India VS Pak", href: "/categories/india-vs-pak" },
-//   { name: "Tech", href: "/categories/tech" },
-//   { name: "Sports", href: "/categories/sports" },
-//   { name: "YouTube", href: "/categories/youtube" },
-//   { name: "Health", href: "/categories/health" },
-//   { name: "World", href: "/categories/world" },
-//   { name: "politics", href: "/categories/politics" },
-//   { name: "Business", href: "/categories/business" },
-//   { name: "Entertainment", href: "/categories/entertainment" },
-//   { name: "Travel", href: "/categories/travel" },
-// ];
 
 const Navbar = ({ posts, menu }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -115,7 +100,7 @@ const Navbar = ({ posts, menu }) => {
                       className='flex items-center p-2 space-x-3 hover:bg-gray-100 transition'>
                       <div className='w-12 h-12 flex-shrink-0'>
                         <Image
-                          src={`/uploads/${item.image}`}
+                          src={`${item.image}`}
                           alt={item.title}
                           width={48}
                           height={48}
@@ -188,7 +173,7 @@ const Navbar = ({ posts, menu }) => {
                     className='flex items-center p-2 space-x-3 hover:bg-gray-100 transition'>
                     <div className='w-12 h-12 flex-shrink-0'>
                       <Image
-                        src={`/uploads/${item.image}`}
+                        src={`${item.image}`}
                         alt={item.title}
                         width={48}
                         height={48}

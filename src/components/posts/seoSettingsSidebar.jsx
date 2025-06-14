@@ -129,7 +129,7 @@ export default function SeoSidebar({
               src={
                 image instanceof File
                   ? imagePreviewUrl
-                  : `/uploads/${imagePreviewUrl}`
+                  : `${imagePreviewUrl}`
               }
               alt="Image preview"
               className="w-32 h-32 object-cover rounded-md shadow-md border border-gray-200"
@@ -322,7 +322,7 @@ export default function SeoSidebar({
               src={
                 ogImage instanceof File
                   ? ogImagePreviewUrl
-                  : `/uploads/${ogImagePreviewUrl}`
+                  : `${ogImagePreviewUrl}`
               }
               alt="OG Image preview"
               className="w-32 h-32 object-cover rounded-md shadow-md border border-gray-200"

@@ -1,10 +1,10 @@
+export const dynamic = "force-dynamic";
+
 import "./globals.css";
+import { getSettings } from '@/src/lib/getSettings';
 
 export async function generateMetadata() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
-    next: { revalidate: 3600 },
-  });
-  const settings = await res.json();
+  const settings = await getSettings();
   const get = (key) => settings[key];
 
   return {
@@ -21,10 +21,7 @@ export async function generateMetadata() {
 }
 
 export default async function RootLayout({ children }) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`, {
-    next: { revalidate: 3600 },
-  });
-  const settings = await res.json();
+  const settings = await getSettings();
   const get = (key) => settings[key];
 
   const gaID = get('google_analytics_id');

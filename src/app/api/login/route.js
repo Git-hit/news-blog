@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 import bcrypt from 'bcryptjs';
 
 export async function POST(req) {
@@ -11,36 +11,29 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Email and password required' }, { status: 400 });
     }
 
-    const client = await pool.connect();
+    const client = await clientPromise;
+    const db = client.db();
 
     // Fetch user by email
-    const result = await client.query(
-      'SELECT id, name, email, password, role FROM users WHERE email = $1',
-      [email]
-    );
+    const user = await db.collection('users').findOne({ email });
 
-    if (result.rows.length === 0) {
-      client.release();
+    if (!user) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
-    const user = result.rows[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      client.release();
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
-    // Fetch permissions from `permissions` table where assigned_to contains user's ID
-    const permResult = await client.query(
-      `SELECT name FROM permissions WHERE assigned_to @> ARRAY[$1]::int[]`,
-      [user.id]
-    );
+    // Fetch permissions from `permissions` where assigned_to includes user.id
+    const permissionsDocs = await db
+      .collection('permissions')
+      .find({ assigned_to: user.id }) // Note: user.id is the numeric id
+      .toArray();
 
-    const permissions = permResult.rows.map(p => p.name);
-
-    client.release();
+    const permissions = permissionsDocs.map(p => p.name);
 
     return NextResponse.json({
       message: 'Logged in',

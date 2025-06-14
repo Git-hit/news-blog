@@ -73,7 +73,7 @@ const MostRead = ({ mostReadData, category }) => {
         {/* Main Featured Article */}
         <div onClick={() => router.push(`/post/${mainStory.slug}`)} className="cursor-pointer bg-white rounded-xl shadow overflow-hidden flex flex-col md:flex-row">
           <Image
-            src={`/uploads/${mainStory.image}`}
+            src={`${mainStory.image}`}
             alt={mainStory.title}
             width={400}
             height={250}
@@ -123,7 +123,7 @@ const MostRead = ({ mostReadData, category }) => {
               className="cursor-pointer flex items-start space-x-4 bg-white p-3 rounded-lg shadow-sm hover:bg-gray-50"
             >
               <Image
-                src={`/uploads/${item.image}`}
+                src={`${item.image}`}
                 alt={item.title}
                 width={80}
                 height={80}

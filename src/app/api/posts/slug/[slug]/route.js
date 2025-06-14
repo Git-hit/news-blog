@@ -1,46 +1,39 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 
-// GET post by slug + comments + 5 popular posts
 export async function GET(_, context) {
   const { slug } = context.params;
 
-  console.log("Slug: ", slug);
-
   try {
-    const client = await pool.connect();
+    const client = await clientPromise;
+    const db = client.db();
+
+    const postsCollection = db.collection('posts');
+    const commentsCollection = db.collection('comments');
 
     // Get post
-    const postResult = await client.query('SELECT * FROM posts WHERE slug = $1', [slug]);
-    if (postResult.rows.length === 0) {
-      client.release();
+    const post = await postsCollection.findOne({ slug });
+    if (!post) {
       return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
-    const post = postResult.rows[0];
 
     // Get comments
-    const commentsResult = await client.query('SELECT * FROM comments WHERE "post-slug" = $1', [slug]);
-    const comments = commentsResult.rows;
+    const comments = await commentsCollection.find({ 'post-slug': slug }).sort({ created_at: -1 }).toArray();
 
     // Check if all posts have 0 views
-    const viewsCountResult = await client.query('SELECT COUNT(*) FROM posts WHERE views > 0');
-    const allZeroViews = viewsCountResult.rows[0].count === '0';
-
+    const postsWithViews = await postsCollection.countDocuments({ views: { $gt: 0 } });
     let allPosts;
-    if (allZeroViews) {
-      const res = await client.query('SELECT * FROM posts ORDER BY created_at DESC LIMIT 5');
-      allPosts = res.rows;
-    } else {
-      const res = await client.query('SELECT * FROM posts ORDER BY views DESC LIMIT 5');
-      allPosts = res.rows;
-    }
 
-    client.release();
+    if (postsWithViews === 0) {
+      allPosts = await postsCollection.find().sort({ created_at: -1 }).limit(5).toArray();
+    } else {
+      allPosts = await postsCollection.find().sort({ views: -1 }).limit(5).toArray();
+    }
 
     return NextResponse.json({
       post,
       comments,
-      allPosts
+      allPosts,
     });
 
   } catch (err) {
@@ -54,17 +47,18 @@ export async function POST(_, { params }) {
   const { slug } = params;
 
   try {
-    const client = await pool.connect();
+    const client = await clientPromise;
+    const db = client.db();
 
-    const postRes = await client.query('SELECT * FROM posts WHERE slug = $1', [slug]);
-    if (postRes.rows.length === 0) {
-      client.release();
+    const postsCollection = db.collection('posts');
+
+    const post = await postsCollection.findOne({ slug });
+    if (!post) {
       return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
 
-    await client.query('UPDATE posts SET views = views + 1 WHERE slug = $1', [slug]);
+    await postsCollection.updateOne({ slug }, { $inc: { views: 1 } });
 
-    client.release();
     return NextResponse.json({ message: 'View count incremented' });
   } catch (err) {
     console.error('View increment error:', err);

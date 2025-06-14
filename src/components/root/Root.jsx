@@ -110,7 +110,7 @@ const Root = ({ mainNews }) => {
               className="relative h-96 cursor-pointer rounded-lg overflow-hidden mb-6"
             >
               <Image
-                src={`/uploads/${item.image}`}
+                src={`${item.image}`}
                 alt={item.title}
                 fill
                 className="object-cover"
@@ -131,7 +131,7 @@ const Root = ({ mainNews }) => {
     className="relative h-96 cursor-pointer rounded-lg overflow-hidden mb-6"
   >
     <Image
-      src={`/uploads/${mainPost.image}`}
+      src={`${mainPost.image}`}
       alt={mainPost.title}
       fill
       className="object-cover"
@@ -174,7 +174,7 @@ const Root = ({ mainNews }) => {
                   <div className="w-24 h-20 rounded-md overflow-hidden flex-shrink-0">
                     <Image
                       src={
-                        `/uploads/${item.image}` ||
+                        `${item.image}` ||
                         "/logo1.jpg"
                       }
                       alt={item.title}

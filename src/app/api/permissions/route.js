@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 
-// GET /api/permissions
 export async function GET() {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM permissions ORDER BY id');
-    client.release();
+    const client = await clientPromise;
+    const db = client.db();
+    const permissionsCollection = db.collection('permissions');
 
-    return NextResponse.json(result.rows);
+    const permissions = await permissionsCollection.find().sort({ id: 1 }).toArray();
+
+    return NextResponse.json(permissions);
   } catch (err) {
     console.error('Error fetching permissions:', err);
     return NextResponse.json({ message: 'Failed to fetch permissions' }, { status: 500 });

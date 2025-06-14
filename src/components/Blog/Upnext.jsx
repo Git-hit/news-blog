@@ -55,7 +55,7 @@ const Upnext = ({ posts, category }) => {
             </div>
             <div className="w-28 h-20 flex-shrink-0">
               <Image
-                src={`/uploads/${post.image}`}
+                src={`${post.image}`}
                 alt={post.title}
                 width={112}
                 height={80}

@@ -1,22 +1,15 @@
 import { notFound } from "next/navigation";
-// import Layout from "./layout";
-import Navbar from "../../components/Navbar/Navbar";
-import NewsFooter from "../../components/Footer/Footer";
-import TopIndex from "../../components/Blog/TopIndex";
-import Upnext from "../../components/Blog/Upnext";
-import MostRead from "../../components/news/MostRead";
-import TariffNews from "../../components/Blog/TariffNews";
-import BlogPage from "../../components/Blog/BlogPage";
-import PostViewCounter from "../../components/posts/viewCountUpdater";
+import Navbar from "@/src/components/Navbar/Navbar";
+import NewsFooter from "@/src/components/Footer/Footer";
+import PostViewCounter from "@/src/components/posts/viewCountUpdater";
+import BlogPage from "@/src/components/Blog/BlogPage";
+import { decode } from "he";
 
-const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 export async function generateMetadata({ params }) {
-  // Await params
-  const awaitedParams = await params;
-
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pages/slug/${awaitedParams.slug}`, {
-    cache: "no-store",
+  const res = await fetch(`${API}/api/pages/slug/${params.slug}`, {
+    next: { revalidate: 3600 },
   });
 
   if (!res.ok) return {};
@@ -29,7 +22,8 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: page.og_title || page.meta_title || page.title,
       description: page.og_description || page.meta_description,
-    //   images: page.og_image ? [`${NEXT_PUBLIC_API_URL}/storage/${page.og_image}`] : [],
+      // Uncomment if og_image is reliable:
+      // images: page.og_image ? [`${API}/storage/${page.og_image}`] : [],
     },
     robots: page.robots_tag,
     alternates: {
@@ -39,64 +33,33 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const awaitedParams = await params;
+  const [pageRes, newsRes, menuRes] = await Promise.all([
+    fetch(`${API}/api/pages/slug/${params.slug}`, { cache: "no-store" }),
+    fetch(`${API}/api/news`, { next: { revalidate: 60 } }),
+    fetch(`${API}/api/menu`, { next: { revalidate: 300 } }),
+  ]);
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pages/slug/${awaitedParams.slug}`, {
-    cache: "no-store",
-  });
+  if (!pageRes.ok) return notFound();
 
-  if (!res.ok) return notFound();
+  const [{ page }, news, menu] = await Promise.all([
+    pageRes.json(),
+    newsRes.json(),
+    menuRes.json(),
+  ]);
 
-  const { page } = await res.json();
-
-  const pageData = {
-    title: page.title,
-    content: page.content,
-    image: page.image,
-    category: page.category, // add what's needed
-  };
-
-  const processedHtml = pageData.content.replace(/<p><\/p>/g, '<p><br /></p>');
-  
-    const withDecodedSnippets = processedHtml.replace(
+  const cleanContent = page.content
+    .replace(/<p><\/p>/g, "<p><br /></p>")
+    .replace(
       /<div[^>]+data-html-snippet[^>]+content="([^"]+)"[^>]*><\/div>/g,
-      (_, encodedContent) => decode(encodedContent)
+      (_, encoded) => decode(encoded)
     );
 
-  let loading = true;
-
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
-    cache: "no-store",
-  });
-  const news = await response.json();
-  const menuRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`, {
-    cache: "no-store",
-  });
-  const menu = await menuRes.json();
-  loading = false;
-
   return (
-    <>
-      {loading ? (
-        <div className="flex h-screen justify-center items-center">
-          <div className="animate-spin border-2 border-slate-900 border-b-transparent rounded-full size-10"></div>
-        </div>
-      ) : (
-        <div>
-          <Navbar posts={news} menu={menu} />
-          {/* <TopIndex /> */}
-          <PostViewCounter slug={awaitedParams.slug} type={"pages"} />
-          <BlogPage
-            title={pageData.title}
-            content={withDecodedSnippets}
-            image={pageData.image}
-          />
-          {/* <Upnext posts={news} category={awaitedParams.slug} /> */}
-          {/* <MostRead mostReadData={pageData} category={} /> */}
-          {/* <TariffNews /> */}
-          <NewsFooter />
-        </div>
-      )}
-    </>
+    <div>
+      <Navbar posts={news} menu={menu} />
+      <PostViewCounter slug={params.slug} type="pages" />
+      <BlogPage title={page.title} content={cleanContent} image={page.image} isPost={false} />
+      <NewsFooter />
+    </div>
   );
 }

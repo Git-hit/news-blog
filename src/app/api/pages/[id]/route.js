@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
+import parseForm from '@/src/lib/parseForm';
 import fs from 'fs';
 import path from 'path';
-import formidable from 'formidable';
 import { promises as fsp } from 'fs';
-import { Readable } from 'stream';
+import { ObjectId } from 'mongodb';
 
 export const config = {
   api: {
@@ -12,68 +12,40 @@ export const config = {
   },
 };
 
-// Convert web request to Node-readable stream
-function toNodeRequest(req) {
-  const body = Readable.from(req.body);
-  const headers = {};
-
-  req.headers.forEach((value, key) => {
-    headers[key.toLowerCase()] = value;
-  });
-
-  Object.assign(body, {
-    headers,
-    method: req.method,
-    url: req.url,
-  });
-
-  return body;
-}
-
 // GET one page by ID
 export async function GET(_, { params }) {
   const { id } = params;
 
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM pages WHERE id = $1', [id]);
-    client.release();
+    const client = await clientPromise;
+    const db = client.db();
+    const pagesCollection = db.collection('pages');
 
-    if (result.rows.length === 0) {
+    const page = await pagesCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!page) {
       return NextResponse.json({ message: 'Page not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ page: result.rows[0] });
+    return NextResponse.json({ page });
   } catch (err) {
     console.error('Fetch error:', err);
     return NextResponse.json({ message: 'Failed to fetch page' }, { status: 500 });
   }
 }
 
-// PUT update a page
-export async function POST(req, { params }) {
+// POST → Update page
+export async function POST(req, context) {
+  const { params } = await context;
   const { id } = params;
-  const nodeReq = toNodeRequest(req);
 
   const uploadDir = path.join(process.cwd(), 'public', 'uploads');
   await fsp.mkdir(uploadDir, { recursive: true });
 
-  const form = formidable({
-      uploadDir,
-      keepExtensions: true,
-      maxFileSize: 20 * 1024 * 1024,
-      filename: (name, ext, part) => {
-        return `${Date.now()}-${part.originalFilename}`;
-      },
-    });
-
   try {
-    const { fields } = await new Promise((resolve, reject) => {
-      form.parse(nodeReq, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve([fields, files]);
-      });
-    });
+    // ✅ parse form data
+    const { fields, files } = await parseForm(req, uploadDir);
+    // const flatFields = flattenFields(fields);
 
     const {
       title,
@@ -88,59 +60,50 @@ export async function POST(req, { params }) {
       ogDescription,
     } = fields;
 
-    // const newImage = files.image?.[0];
-    // const newOgImage = files.ogImage?.[0];
-    // const imageUrl = newImage ? `/uploads/${path.basename(newImage.filepath)}` : null;
-    // const ogImageUrl = newOgImage ? `/uploads/${path.basename(newOgImage.filepath)}` : null;
+    const newImage = files.image?.[0];
+    const newOgImage = files.ogImage?.[0];
+    const imageUrl = newImage ? `${path.basename(newImage.filepath)}` : null;
+    const ogImageUrl = newOgImage ? `${path.basename(newOgImage.filepath)}` : null;
 
-    const client = await pool.connect();
-    // const result = await client.query('SELECT image, og_image FROM pages WHERE id = $1', [id]);
-    // if (result.rows.length === 0) {
-    //   client.release();
-    //   return NextResponse.json({ message: 'Page not found' }, { status: 404 });
-    // }
+    const client = await clientPromise;
+    const db = client.db();
+    const pagesCollection = db.collection('pages');
 
-    // const old = result.rows[0];
-    // const deleteFile = (file) => {
-    //   const filePath = path.join(process.cwd(), 'public', file);
-    //   if (file && fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    // };
+    const page = await pagesCollection.findOne({ _id: new ObjectId(id) });
+    if (!page) {
+      return NextResponse.json({ message: 'Page not found' }, { status: 404 });
+    }
 
-    // if (newImage) deleteFile(old.image);
-    // if (newOgImage) deleteFile(old.og_image);
+    const deleteFile = (filePath) => {
+      const fullPath = path.join(process.cwd(), 'public', filePath);
+      if (filePath && fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    };
 
-    await client.query(
-      `UPDATE pages SET
-        title = $1,
-        content = $2,
-        meta_title = $3,
-        meta_description = $4,
-        focus_keyword = $5,
-        slug = $6,
-        canonical_url = $7,
-        robots_tag = $8,
-        og_title = $9,
-        og_description = $10,
-        updated_at = NOW()
-      WHERE id = $11`,
-      [
-        title,
-        content,
-        metaTitle,
-        metaDescription,
-        focusKeyword,
-        slug,
-        canonicalUrl,
-        robotsTag || 'index, follow',
-        ogTitle,
-        ogDescription,
-        // imageUrl,
-        // ogImageUrl,
-        id,
-      ]
+    if (newImage && page.image) deleteFile(page.image);
+    if (newOgImage && page.og_image) deleteFile(page.og_image);
+
+    const updateDoc = {
+      title,
+      content,
+      meta_title: metaTitle,
+      meta_description: metaDescription,
+      focus_keyword: focusKeyword,
+      slug,
+      canonical_url: canonicalUrl,
+      robots_tag: robotsTag || 'index, follow',
+      og_title: ogTitle,
+      og_description: ogDescription,
+      updated_at: new Date(),
+    };
+
+    if (imageUrl) updateDoc.image = imageUrl;
+    if (ogImageUrl) updateDoc.og_image = ogImageUrl;
+
+    await pagesCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateDoc }
     );
 
-    client.release();
     return NextResponse.json({ message: 'Page updated successfully' });
   } catch (err) {
     console.error('Update error:', err);
@@ -148,29 +111,30 @@ export async function POST(req, { params }) {
   }
 }
 
-// DELETE a page
+// DELETE one page
 export async function DELETE(_, { params }) {
   const { id } = params;
 
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT image, og_image FROM pages WHERE id = $1', [id]);
-    if (result.rows.length === 0) {
-      client.release();
+    const client = await clientPromise;
+    const db = client.db();
+    const pagesCollection = db.collection('pages');
+
+    const page = await pagesCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!page) {
       return NextResponse.json({ message: 'Page not found' }, { status: 404 });
     }
 
-    const { image, og_image } = result.rows[0];
-    const deleteFile = (file) => {
-      const filePath = path.join(process.cwd(), 'public', file);
-      if (file && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    const deleteFile = (filePath) => {
+      const fullPath = path.join(process.cwd(), 'public', filePath);
+      if (filePath && fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
     };
 
-    deleteFile(image);
-    deleteFile(og_image);
+    if (page.image) deleteFile(page.image);
+    if (page.og_image) deleteFile(page.og_image);
 
-    await client.query('DELETE FROM pages WHERE id = $1', [id]);
-    client.release();
+    await pagesCollection.deleteOne({ _id: new ObjectId(id) });
 
     return NextResponse.json({ message: 'Page deleted successfully' });
   } catch (err) {

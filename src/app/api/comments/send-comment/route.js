@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../../lib/db';
+import clientPromise from '@/src/lib/mongodb';
 
 export async function POST(req) {
   try {
@@ -10,13 +10,16 @@ export async function POST(req) {
       return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
     }
 
-    const client = await pool.connect();
-    await client.query(
-      `INSERT INTO comments (name, email, comment, "post-slug", created_at)
-       VALUES ($1, $2, $3, $4, NOW())`,
-      [name, email, comment, postSlug]
-    );
-    client.release();
+    const client = await clientPromise;
+    const db = client.db();
+
+    await db.collection('comments').insertOne({
+      name,
+      email,
+      comment,
+      'post-slug': postSlug,
+      created_at: new Date(),
+    });
 
     return NextResponse.json({ message: 'Comment submitted successfully' }, { status: 201 });
   } catch (err) {
