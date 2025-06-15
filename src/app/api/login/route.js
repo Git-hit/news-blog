@@ -3,7 +3,7 @@ import clientPromise from '@/src/lib/mongodb';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET; // Store this securely in your .env.local
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(req) {
   try {
