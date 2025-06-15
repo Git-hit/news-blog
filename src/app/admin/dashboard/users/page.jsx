@@ -35,6 +35,7 @@ const PERMISSION_LABELS = {
   manage_header_settings: "Manage header settings",
   manage_footer_settings: "Manage footer settings",
   manage_notifications: "Manage notifications",
+  manage_comments: "Manage comments",
 };
 
 export default function UsersPage() {

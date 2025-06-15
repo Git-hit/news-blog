@@ -4,9 +4,9 @@ import clientPromise from '@/src/lib/mongodb';
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, email, comment, ['post-slug']: postSlug } = body;
+    const { name, email, comment, postSlug, status } = body;
 
-    if (!name || !email || !comment || !postSlug) {
+    if (!name || !email || !comment || !postSlug || !status) {
       return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
     }
 
@@ -17,7 +17,8 @@ export async function POST(req) {
       name,
       email,
       comment,
-      'post-slug': postSlug,
+      postSlug,
+      status,
       created_at: new Date(),
     });
 

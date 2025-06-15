@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/src/lib/mongodb';
 
 export async function GET(_, { params }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     const client = await clientPromise;

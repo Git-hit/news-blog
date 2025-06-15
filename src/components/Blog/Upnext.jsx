@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Upnext = ({ posts, category }) => {
   const router = useRouter();
@@ -29,17 +30,18 @@ const Upnext = ({ posts, category }) => {
 
       <ul className="space-y-6">
         {upNextPosts.map((post, index) => (
-          <li
-            onClick={() => {
-              const currentSlug = window.location.pathname.split("/").pop();
-              if (currentSlug === post.slug) {
-                // Navigate to the same slug: force reload
-                // router.replace(`/post/${post.slug}`); // Soft navigation
-                window.location.reload(); // Full reload to fetch new data
-              } else {
-                router.push(`/post/${post.slug}`);
-              }
-            }}
+          <Link
+            // onClick={() => {
+            //   const currentSlug = window.location.pathname.split("/").pop();
+            //   if (currentSlug === post.slug) {
+            //     // Navigate to the same slug: force reload
+            //     // router.replace(`/post/${post.slug}`); // Soft navigation
+            //     window.location.reload(); // Full reload to fetch new data
+            //   } else {
+            //     router.push(`/post/${post.slug}`);
+            //   }
+            // }}
+            href={`/post/${post.slug}`}
             key={post.id}
             className={`flex justify-between gap-4 pb-4 ${
               index !== upNextPosts.length - 1 ? "border-b" : ""
@@ -62,7 +64,7 @@ const Upnext = ({ posts, category }) => {
                 className="w-full h-full object-cover rounded-md"
               />
             </div>
-          </li>
+          </Link>
         ))}
       </ul>
     </div>

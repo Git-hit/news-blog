@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/src/lib/mongodb';
 
 export async function GET(_, { params }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   if (!slug) {
     return NextResponse.json({ message: 'Post slug required' }, { status: 400 });
@@ -14,9 +14,11 @@ export async function GET(_, { params }) {
 
     const comments = await db
       .collection('comments')
-      .find({ 'post-slug': slug })
-      .sort({ created_at: 1 }) // ASC
+      .find({ postSlug: slug, status: "approved" })
+      .sort({ created_at: 1 })
       .toArray();
+
+    console.log("Slug: ", slug, "Comments: ", comments);
 
     return NextResponse.json({ comments });
   } catch (err) {

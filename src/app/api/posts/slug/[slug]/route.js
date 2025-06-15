@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/src/lib/mongodb';
 
-export async function GET(_, context) {
-  const { slug } = context.params;
+export async function GET(_, { params }) {
+  const { slug } = await params;
 
   try {
     const client = await clientPromise;
@@ -18,7 +18,7 @@ export async function GET(_, context) {
     }
 
     // Get comments
-    const comments = await commentsCollection.find({ 'post-slug': slug }).sort({ created_at: -1 }).toArray();
+    const comments = await commentsCollection.find({ postSlug: slug, status: "approved" }).sort({ created_at: -1 }).toArray();
 
     // Check if all posts have 0 views
     const postsWithViews = await postsCollection.countDocuments({ views: { $gt: 0 } });
@@ -44,7 +44,7 @@ export async function GET(_, context) {
 
 // POST to increment views
 export async function POST(_, { params }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     const client = await clientPromise;

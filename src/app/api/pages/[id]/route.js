@@ -90,8 +90,8 @@ export async function POST(req, context) {
 
     const newImage = files.image?.[0];
     const newOgImage = files.ogImage?.[0];
-    const imageUrl = newImage ? `${path.basename(newImage.filepath)}` : null;
-    const ogImageUrl = newOgImage ? `${path.basename(newOgImage.filepath)}` : null;
+    const imageUrl = newImage ? `/uploads/${path.basename(newImage.filepath)}` : null;
+    const ogImageUrl = newOgImage ? `/uploads/${path.basename(newOgImage.filepath)}` : null;
 
     const client = await clientPromise;
     const db = client.db();

@@ -8,7 +8,8 @@ import { decode } from "he";
 import TwitterScriptLoader from "../../../components/posts/twitterScriptLoader";
 
 export async function generateMetadata({ params }) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${params.slug}`, {
+  const { slug } = await params;
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${slug}`, {
     next: { revalidate: 3600 },
   });
 
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Post({ params }) {
-  const slug = params.slug;
+  const { slug } = await params;
 
   const [postRes, newsRes, menuRes] = await Promise.all([
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${slug}`, {
@@ -83,8 +84,6 @@ export default async function Post({ params }) {
       />
       <Upnext posts={news} category={slug} />
       <NewsFooter />
-      {/* Move Twitter widget loading to client side if not needed at SSR */}
-      {/* <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" /> */}
       <TwitterScriptLoader />
     </div>
   );

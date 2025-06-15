@@ -34,6 +34,7 @@ import {
   LogOut,
   Megaphone,
   Menu,
+  MessageSquareText,
   Settings,
   StickyNote,
   User,
@@ -58,6 +59,12 @@ const allNavItems = [
     url: "/admin/dashboard/pages",
     key: "pages",
     icon: StickyNote,
+  },
+  {
+    title: "Comments",
+    url: "/admin/dashboard/comments",
+    key: "comments",
+    icon: MessageSquareText,
   },
   {
     title: "Notifications",

@@ -1,7 +1,7 @@
 "use client";
 import './blogStyles.css';
 
-export default function BlogPage({ title = 'Untitled', content = '', image = "" }) {
+export default function HeroArticleHeader({ title = 'Untitled', content = '', image = "" }) {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">

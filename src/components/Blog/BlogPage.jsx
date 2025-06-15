@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { DateTime } from "luxon";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function BlogPage({
   title = "Untitled",
@@ -22,12 +22,13 @@ export default function BlogPage({
     name: "",
     email: "",
     comment: "",
-    "post-slug": slug,
+    postSlug: slug,
   });
   const [submitting, setSubmitting] = useState(false);
   const [comments, setComments] = useState(allComments || []);
   const [mostPopular, setMostPopular] = useState(allPosts || []);
-  const router = useRouter();
+
+  // console.log(allComments)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,22 +39,27 @@ export default function BlogPage({
     setSubmitting(true);
 
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/comments/send-comment`,
-        formData
-      );
-
       const newComment = {
-        id: Date.now(),
         name: formData.name,
+        email: formData.email,
+        postSlug: formData.postSlug,
         comment: formData.comment,
+        status: "pending",
         created_at: new Date().toISOString(),
       };
 
-      setComments((prev) => [newComment, ...prev]);
+      // console.log(newComment);
 
-      toast("Your comment was submitted.");
-      setFormData({ name: "", email: "", comment: "", "post-slug": slug });
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/comments/send-comment`,
+        newComment
+      );
+
+
+      // setComments((prev) => [newComment, ...prev]);
+
+      toast("Your comment was submitted for review.");
+      setFormData({ name: "", email: "", comment: "", postSlug: slug });
     } catch (error) {
       toast("Something went wrong.");
     } finally {
@@ -62,9 +68,9 @@ export default function BlogPage({
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-10">
+    <main className="max-w-7xl mx-auto px-4 py-10 min-h-screen">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
-      <div className="flex md:gap-7 min-h-screen">
+      <div className="flex md:gap-7">
         <div className={`${isPost ? "md:w-2/3" : "w-full"}`}>
           {image && (
             <img src={`${image}`} />
@@ -119,7 +125,7 @@ export default function BlogPage({
               <ul className="space-y-6">
                 {comments.map((comment) => (
                   <li
-                    key={comment.id}
+                    key={comment._id}
                     className="p-4 border rounded-xl shadow-sm flex items-start gap-4"
                   >
                     <img
@@ -150,22 +156,22 @@ export default function BlogPage({
             )}
           </section>
         </div>
-        <div className={`${isPost ? "min-h-screen md:w-1/3" : "hidden"}`}>
-          <div className="hidden md:block md:sticky top-0">
-            {mostPopular && (
+        {/* RIGHT SIDEBAR: Most Popular */}
+        <div className="hidden md:block w-1/3">
+          <div className="sticky top-24">
+            <div className="bg-white p-4">
               <h2 className="text-center text-red-700 mb-5">MOST POPULAR</h2>
-            )}
-            {mostPopular &&
-              mostPopular.map((post, index) => (
-                <div
+              {mostPopular.map((post, index) => (
+                <Link
                   key={index}
-                  onClick={() => router.push(`/post/${post.slug}`)}
-                  className="flex gap-3 items-start cursor-pointer w-full"
+                  href={`/post/${post.slug}`}
+                  className="flex gap-3 items-start cursor-pointer w-full mb-4"
                 >
-                  <img className="w-1/3" src={`${post.image}`} alt={post.title} />
-                  <p className="w-2/3">{post.title}</p>
-                </div>
+                  <img className="w-1/3 object-cover" src={post.image} alt={post.title} />
+                  <p className="w-2/3 text-sm font-medium">{post.title}</p>
+                </Link>
               ))}
+            </div>
           </div>
         </div>
       </div>

@@ -43,9 +43,15 @@ const Navbar = ({ posts, menu }) => {
     <nav className='bg-black border-b border-gray-800 shadow-sm relative z-50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center'>
         {/* Logo */}
-        <div className='flex items-center space-x-2'>
-          <Image className="!cursor-pointer" src='/Logo.png' onClick={() => router.push("/")} alt='Logo' width={100} height={100} />
-        </div>
+        <Link href={`/`} className='flex items-center space-x-2'>
+          <Image 
+            className="!cursor-pointer" 
+            src='/Logo.png' 
+            // onClick={() => router.push("/")}
+            alt='Logo' 
+            width={100} height={100} 
+          />
+        </Link>
 
         {/* Desktop Nav Links */}
         {!showSearch && (
@@ -94,8 +100,9 @@ const Navbar = ({ posts, menu }) => {
               <div className='bg-white rounded-b-lg max-h-64 overflow-y-auto divide-y absolute top-12 w-80'>
                 {filteredData.length ? (
                   filteredData.map((item) => (
-                    <div
-                      onClick={() => router.push(`/post/${item.slug}`)}
+                    <Link
+                      // onClick={() => router.push(`/post/${item.slug}`)}
+                      href={`/post/${item.slug}`}
                       key={item.id}
                       className='flex items-center p-2 space-x-3 hover:bg-gray-100 transition'>
                       <div className='w-12 h-12 flex-shrink-0'>
@@ -110,7 +117,7 @@ const Navbar = ({ posts, menu }) => {
                       <span className='text-sm font-medium text-black truncate max-w-[200px]'>
                         {item.title}
                       </span>
-                    </div>
+                    </Link>
                   ))
                 ) : (
                   <div className='p-3 text-sm text-gray-500'>
