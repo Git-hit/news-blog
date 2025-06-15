@@ -11,7 +11,6 @@ function slugify(text) {
 
 const MoreToExplore = ({ exploreData, category }) => {
   const router = useRouter();
-  // Filter the data
   const filtered = exploreData.filter((item) => {
     try {
       const parsed = JSON.parse(item.categories);
