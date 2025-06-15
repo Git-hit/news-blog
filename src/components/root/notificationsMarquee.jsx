@@ -39,8 +39,9 @@ export default function NotificationsMarquee({ notifications, router }) {
             }}
           >
             {notifications.map((item, idx) => (
-              <span
-                onClick={() => router.push(item.link)}
+              <a
+                // onClick={() => router.push(item.link)}
+                href={item.link}
                 key={`${item.id}-${idx}`}
                 className="inline-flex items-center space-x-3 mr-10 text-sm cursor-pointer"
               >
@@ -48,7 +49,7 @@ export default function NotificationsMarquee({ notifications, router }) {
                 <span className="text-red-500 font-bold text-lg leading-none">
                   •
                 </span>
-              </span>
+              </a>
             ))}
           </div>
         </div>

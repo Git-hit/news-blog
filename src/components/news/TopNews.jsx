@@ -67,48 +67,59 @@ const TopNews = ({ topNewsData, category }) => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Main Story */}
-        <div onClick={() => router.push(`/post/${mainStory.slug}`)} className="cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm">
-          <Image
-            src={`${mainStory.image}`}
-            alt={mainStory.title}
-            width={800}
-            height={400}
-            className="w-full h-64 object-cover"
-          />
-          <div className="p-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-              {formatPosted(mainStory.created_at)}
+        <div
+          // onClick={() => router.push(`/post/${mainStory.slug}`)} 
+          className="cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm"
+        >
+          <a href={`/post/${mainStory.slug}`}>
+            <Image
+              src={`${mainStory.image}`}
+              alt={mainStory.title}
+              width={800}
+              height={400}
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                {formatPosted(mainStory.created_at)}
+              </div>
+              <h3 className="text-xl font-semibold mb-2">{mainStory.title}</h3>
+              <p className="text-sm text-gray-700 line-clamp-3">{mainStory.meta_description}</p>
+              <div className="flex items-center text-xs text-red-600 mt-3">
+                <span>{category.replace(/-/g, " ")}</span>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2">{mainStory.title}</h3>
-            <p className="text-sm text-gray-700 line-clamp-3">{mainStory.meta_description}</p>
-            <div className="flex items-center text-xs text-red-600 mt-3">
-              <span>{category.replace(/-/g, " ")}</span>
-            </div>
-          </div>
+          </a>
         </div>
 
         {/* Side Stories */}
         <div className="flex flex-col space-y-5">
           {sideStories.map((item) => (
-            <div onClick={() => router.push(`/post/${item.slug}`)} key={item.id} className="cursor-pointer flex items-start space-x-4">
-              <Image
-                src={`${item.image}`}
-                alt={item.title}
-                width={100}
-                height={100}
-                className="w-24 h-20 object-cover rounded-lg"
-              />
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 text-xs text-gray-500 mb-1">
-                  {formatPosted(item.created_at)}
+            <div
+              // onClick={() => router.push(`/post/${item.slug}`)} 
+              key={item.id}
+              className="cursor-pointer flex items-start space-x-4"
+            >
+              <a href={`/post/${item.slug}`}>
+                <Image
+                  src={`${item.image}`}
+                  alt={item.title}
+                  width={100}
+                  height={100}
+                  className="w-24 h-20 object-cover rounded-lg"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 text-xs text-gray-500 mb-1">
+                    {formatPosted(item.created_at)}
+                  </div>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-1 leading-snug">
+                    {item.title}
+                  </h4>
+                  <div className="flex items-center text-xs text-red-600">
+                    <span>{category.replace(/-/g, " ")}</span>
+                  </div>
                 </div>
-                <h4 className="text-sm font-semibold text-gray-900 mb-1 leading-snug">
-                  {item.title}
-                </h4>
-                <div className="flex items-center text-xs text-red-600">
-                  <span>{category.replace(/-/g, " ")}</span>
-                </div>
-              </div>
+              </a>
             </div>
           ))}
         </div>

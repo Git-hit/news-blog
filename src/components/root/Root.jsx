@@ -91,7 +91,7 @@ const Root = ({ mainNews }) => {
               // onClick={() => router.push(`/post/${mainPost.slug}`)}
               className="relative h-96 cursor-pointer rounded-lg overflow-hidden mb-6"
             >
-              <Link href={`/post/${mainPost.slug}`}>
+              <a href={`/post/${mainPost.slug}`}>
                 <Image
                   src={`${mainPost.image}`}
                   alt={mainPost.title}
@@ -106,7 +106,7 @@ const Root = ({ mainNews }) => {
                     {formatPosted(mainPost.created_at)} • Read More
                   </p>
                 </div>
-              </Link>
+              </a>
             </div>
           )}
         </div>
@@ -129,7 +129,7 @@ const Root = ({ mainNews }) => {
                 }
               };
               return (
-                <Link
+                <a
                   // onClick={() => router.push(`/post/${item.slug}`)}
                   href={`/post/${item.slug}`}
                   key={item.id}
@@ -159,7 +159,7 @@ const Root = ({ mainNews }) => {
                       {formatPosted(item.created_at)}
                     </div>
                   </div>
-                </Link>
+                </a>
               );
             })
           ) : (

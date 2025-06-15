@@ -162,14 +162,14 @@ export default function BlogPage({
             <div className="bg-white p-4">
               <h2 className="text-center text-red-700 mb-5">MOST POPULAR</h2>
               {mostPopular.map((post, index) => (
-                <Link
+                <a
                   key={index}
                   href={`/post/${post.slug}`}
                   className="flex gap-3 items-start cursor-pointer w-full mb-4"
                 >
                   <img className="w-1/3 object-cover" src={post.image} alt={post.title} />
                   <p className="w-2/3 text-sm font-medium">{post.title}</p>
-                </Link>
+                </a>
               ))}
             </div>
           </div>

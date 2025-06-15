@@ -30,7 +30,7 @@ const Upnext = ({ posts, category }) => {
 
       <ul className="space-y-6">
         {upNextPosts.map((post, index) => (
-          <Link
+          <a
             // onClick={() => {
             //   const currentSlug = window.location.pathname.split("/").pop();
             //   if (currentSlug === post.slug) {
@@ -64,7 +64,7 @@ const Upnext = ({ posts, category }) => {
                 className="w-full h-full object-cover rounded-md"
               />
             </div>
-          </Link>
+          </a>
         ))}
       </ul>
     </div>

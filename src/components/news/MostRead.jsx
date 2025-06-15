@@ -51,14 +51,14 @@ const MostRead = ({ mostReadData, category }) => {
   const [mainStory, ...sideStories] = sorted;
 
   const formatPosted = (dateString) => {
-      if (!dateString) return "";
-      const dt = DateTime.fromISO(dateString);
-      const now = DateTime.now();
-      const diff = now.diff(dt, ["hours", "days"]);
-      if (diff.days >= 1) return dt.toFormat("LLL dd, yyyy");
-      if (diff.hours >= 1) return `${Math.floor(diff.hours)} hours ago`;
-      return "Just now";
-    };
+    if (!dateString) return "";
+    const dt = DateTime.fromISO(dateString);
+    const now = DateTime.now();
+    const diff = now.diff(dt, ["hours", "days"]);
+    if (diff.days >= 1) return dt.toFormat("LLL dd, yyyy");
+    if (diff.hours >= 1) return `${Math.floor(diff.hours)} hours ago`;
+    return "Just now";
+  };
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-10">
@@ -71,88 +71,95 @@ const MostRead = ({ mostReadData, category }) => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Main Featured Article */}
-        <div onClick={() => router.push(`/post/${mainStory.slug}`)} className="cursor-pointer bg-white rounded-xl shadow overflow-hidden flex flex-col md:flex-row">
-          <Image
-            src={`${mainStory.image}`}
-            alt={mainStory.title}
-            width={400}
-            height={250}
-            className="object-cover w-full md:w-1/2 h-60 md:h-auto"
-          />
-          <div className="p-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                {/* <span className="font-medium text-black">
+        <div
+          // onClick={() => router.push(`/post/${mainStory.slug}`)} 
+          className="cursor-pointer bg-white rounded-xl shadow overflow-hidden flex flex-col md:flex-row"
+        >
+          <a href={`/post/${mainStory.slug}`}>
+            <Image
+              src={`${mainStory.image}`}
+              alt={mainStory.title}
+              width={400}
+              height={250}
+              className="object-cover w-full md:w-1/2 h-60 md:h-auto"
+            />
+            <div className="p-4 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                  {/* <span className="font-medium text-black">
                   {mainStory.author}
-                </span>
+                  </span>
                 <span>•</span> */}
-                <span>{formatPosted(mainStory.created_at)}</span>
+                  <span>{formatPosted(mainStory.created_at)}</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {mainStory.title}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  {mainStory.meta_description}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {mainStory.title}
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                {mainStory.meta_description}
-              </p>
-            </div>
-            <div className="text-xs text-red-500 font-medium">
-              {(() => {
-                if (!mainStory.categories) return "General";
-                try {
-                  const cats = JSON.parse(mainStory.categories);
-                  if (Array.isArray(cats) && cats.length > 0) {
-                    return cats.join(", ");
-                  } else {
-                    return "General";
+              <div className="text-xs text-red-500 font-medium">
+                {(() => {
+                  if (!mainStory.categories) return "General";
+                  try {
+                    const cats = JSON.parse(mainStory.categories);
+                    if (Array.isArray(cats) && cats.length > 0) {
+                      return cats.join(", ");
+                    } else {
+                      return "General";
+                    }
+                  } catch {
+                    return mainStory.categories || "General";
                   }
-                } catch {
-                  return mainStory.categories || "General";
-                }
-              })()}
-              {/* • {mainStory.readTime} */}
+                })()}
+                {/* • {mainStory.readTime} */}
+              </div>
             </div>
-          </div>
+          </a>
         </div>
 
         {/* Side Articles */}
         <div className="space-y-4">
           {sideStories.map((item) => (
             <div
-              onClick={() => router.push(`/post/${item.slug}`)}
+              // onClick={() => router.push(`/post/${item.slug}`)}
               key={item.id}
               className="cursor-pointer flex items-start space-x-4 bg-white p-3 rounded-lg shadow-sm hover:bg-gray-50"
             >
-              <Image
-                src={`${item.image}`}
-                alt={item.title}
-                width={80}
-                height={80}
-                className="rounded-lg object-cover w-20 h-20"
-              />
-              <div className="flex-1">
-                <h4 className="text-sm font-semibold text-gray-900 leading-snug">
-                  {item.title}
-                </h4>
-                {/* <div className="mt-1 text-xs text-gray-500">
+              <a>
+                <Image
+                  src={`${item.image}`}
+                  alt={item.title}
+                  width={80}
+                  height={80}
+                  className="rounded-lg object-cover w-20 h-20"
+                />
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-gray-900 leading-snug">
+                    {item.title}
+                  </h4>
+                  {/* <div className="mt-1 text-xs text-gray-500">
                   {item.author} • {item.timeAgo}
                 </div> */}
-                <div className="text-xs text-red-500 mt-1">
-                  {(() => {
-                    if (!item.categories) return "General";
-                    try {
-                      const cats = JSON.parse(item.categories);
-                      if (Array.isArray(cats) && cats.length > 0) {
-                        return cats.join(", ");
-                      } else {
-                        return "General";
+                  <div className="text-xs text-red-500 mt-1">
+                    {(() => {
+                      if (!item.categories) return "General";
+                      try {
+                        const cats = JSON.parse(item.categories);
+                        if (Array.isArray(cats) && cats.length > 0) {
+                          return cats.join(", ");
+                        } else {
+                          return "General";
+                        }
+                      } catch {
+                        return item.categories || "General";
                       }
-                    } catch {
-                      return item.categories || "General";
-                    }
-                  })()}
-                  {/* • {item.readTime} */}
+                    })()}
+                    {/* • {item.readTime} */}
+                  </div>
                 </div>
-              </div>
+              </a>
             </div>
           ))}
         </div>

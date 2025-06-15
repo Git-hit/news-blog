@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/src/lib/mongodb';
-// import parseForm from '@/src/lib/parseForm';
 import fs from 'fs';
 import path from 'path';
 import { promises as fsp } from 'fs';
@@ -8,7 +7,10 @@ import { ObjectId } from 'mongodb';
 import formidable from 'formidable';
 import { Readable } from 'stream';
 
-async function parseForm(req, uploadDir) {
+const uploadDir = path.join(process.cwd(), 'uploads');
+await fsp.mkdir(uploadDir, { recursive: true });
+
+async function parseForm(req) {
   const form = formidable({
     uploadDir,
     keepExtensions: true,
@@ -23,7 +25,6 @@ async function parseForm(req, uploadDir) {
     form.parse(reqStream, (err, fields, files) => {
       if (err) return reject(err);
 
-      // ✅ Flatten field arrays
       const flatFields = {};
       for (const key in fields) {
         flatFields[key] = Array.isArray(fields[key]) ? fields[key][0] : fields[key];
@@ -63,17 +64,11 @@ export async function GET(_, { params }) {
 }
 
 // POST → Update page
-export async function POST(req, context) {
-  const { params } = await context;
+export async function POST(req, { params }) {
   const { id } = params;
 
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  await fsp.mkdir(uploadDir, { recursive: true });
-
   try {
-    // ✅ parse form data
-    const { fields, files } = await parseForm(req, uploadDir);
-    // const flatFields = flattenFields(fields);
+    const { fields, files } = await parseForm(req);
 
     const {
       title,
@@ -90,8 +85,9 @@ export async function POST(req, context) {
 
     const newImage = files.image?.[0];
     const newOgImage = files.ogImage?.[0];
-    const imageUrl = newImage ? `/uploads/${path.basename(newImage.filepath)}` : null;
-    const ogImageUrl = newOgImage ? `/uploads/${path.basename(newOgImage.filepath)}` : null;
+
+    const imageUrl = newImage ? `/api/uploads/${path.basename(newImage.filepath)}` : null;
+    const ogImageUrl = newOgImage ? `/api/uploads/${path.basename(newOgImage.filepath)}` : null;
 
     const client = await clientPromise;
     const db = client.db();
@@ -102,9 +98,12 @@ export async function POST(req, context) {
       return NextResponse.json({ message: 'Page not found' }, { status: 404 });
     }
 
-    const deleteFile = (filePath) => {
-      const fullPath = path.join(process.cwd(), 'public', filePath);
-      if (filePath && fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    const deleteFile = (urlPath) => {
+      if (urlPath?.startsWith('/api/uploads/')) {
+        const filename = urlPath.replace('/api/uploads/', '');
+        const fullPath = path.join(uploadDir, filename);
+        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+      }
     };
 
     if (newImage && page.image) deleteFile(page.image);
@@ -154,9 +153,12 @@ export async function DELETE(_, { params }) {
       return NextResponse.json({ message: 'Page not found' }, { status: 404 });
     }
 
-    const deleteFile = (filePath) => {
-      const fullPath = path.join(process.cwd(), 'public', filePath);
-      if (filePath && fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    const deleteFile = (urlPath) => {
+      if (urlPath?.startsWith('/api/uploads/')) {
+        const filename = urlPath.replace('/api/uploads/', '');
+        const fullPath = path.join(uploadDir, filename);
+        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+      }
     };
 
     if (page.image) deleteFile(page.image);

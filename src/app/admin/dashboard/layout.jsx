@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
 
 import {
   Sidebar,
@@ -105,6 +105,27 @@ export default function DashboardLayout({ children }) {
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/admin/login");
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      const isExpired = decoded.exp * 1000 < Date.now();
+
+      if (isExpired) {
+        localStorage.clear();
+        router.push("/admin/login");
+      }
+    } catch (err) {
+      console.error("Invalid token", err);
+      localStorage.clear();
+      router.push("/admin/login");
+    }
+
     setIsMounted(true);
     const role = localStorage.getItem("role");
     const permissions = JSON.parse(localStorage.getItem("permissions") || "[]");
@@ -134,11 +155,9 @@ export default function DashboardLayout({ children }) {
   const handleLogout = async () => {
     try {
       setLoggingOut(true);
-      axios.defaults.withCredentials = true;
-      axios.defaults.withXSRFToken = true;
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {});
+      // await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {});
       localStorage.clear();
-      router.push("/admin/login");
+      window.location.href = "/admin/login";
     } catch (err) {
       console.error("Logout failed", err);
     } finally {

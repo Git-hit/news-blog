@@ -169,7 +169,7 @@ export default function UsersPage() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-semibold">User Role Management</h1>
-        <Button onClick={() => setShowForm(true)}>+ Add User</Button>
+        <Button className="cursor-pointer" onClick={() => setShowForm(true)}>+ Add User</Button>
       </div>
 
       {showForm && (
@@ -215,6 +215,7 @@ export default function UsersPage() {
               {Object.entries(PERMISSION_LABELS).map(([key, label]) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
+                    className="cursor-pointer"
                     id={`perm-${key}`}
                     checked={formData.permissions.includes(key)}
                     onCheckedChange={() => togglePermissionInForm(key)}
@@ -228,11 +229,11 @@ export default function UsersPage() {
           </div>
 
           <div className="flex gap-4">
-            <Button type="submit" disabled={savingUser}>
+            <Button className="cursor-pointer" type="submit" disabled={savingUser}>
               {savingUser && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save
             </Button>
-            <Button variant="outline" onClick={() => setShowForm(false)}>
+            <Button className="cursor-pointer" variant="outline" onClick={() => setShowForm(false)}>
               Cancel
             </Button>
           </div>
@@ -260,6 +261,7 @@ export default function UsersPage() {
                 {Object.keys(PERMISSION_LABELS).map((perm) => (
                   <TableCell key={perm} className="text-center">
                     <Checkbox
+                      className="cursor-pointer"
                       checked={user.permissions.includes(perm)}
                       disabled={updatingPermissionId === user.id}
                       onCheckedChange={() =>
@@ -274,7 +276,7 @@ export default function UsersPage() {
                     onOpenChange={setDeleteDialogOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button variant="destructive" size="sm">
+                      <Button className="cursor-pointer" variant="destructive" size="sm">
                         Delete
                       </Button>
                     </DialogTrigger>
@@ -288,12 +290,14 @@ export default function UsersPage() {
                       </DialogHeader>
                       <DialogFooter>
                         <Button
+                          className="cursor-pointer"
                           variant="outline"
                           onClick={() => setDeleteDialogOpen(false)}
                         >
                           Cancel
                         </Button>
                         <Button
+                          className="cursor-pointer"
                           variant="destructive"
                           onClick={handleDeleteUser}
                         >

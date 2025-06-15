@@ -43,7 +43,7 @@ const Navbar = ({ posts, menu }) => {
     <nav className='bg-black border-b border-gray-800 shadow-sm relative z-50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center'>
         {/* Logo */}
-        <Link href={`/`} className='flex items-center space-x-2'>
+        <a href={`/`} className='flex items-center space-x-2'>
           <Image 
             className="!cursor-pointer" 
             src='/Logo.png' 
@@ -51,18 +51,18 @@ const Navbar = ({ posts, menu }) => {
             alt='Logo' 
             width={100} height={100} 
           />
-        </Link>
+        </a>
 
         {/* Desktop Nav Links */}
         {!showSearch && (
           <ul className='hidden md:flex space-x-6'>
             {menu.map((link) => (
               <li key={link.name}>
-                <Link
+                <a
                   href={link.href}
                   className='text-md text-white hover:text-gray-300 duration-300 font-semibold md:max-lg:text-[0.7rem]'>
                   {link.name}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
@@ -100,7 +100,7 @@ const Navbar = ({ posts, menu }) => {
               <div className='bg-white rounded-b-lg max-h-64 overflow-y-auto divide-y absolute top-12 w-80'>
                 {filteredData.length ? (
                   filteredData.map((item) => (
-                    <Link
+                    <a
                       // onClick={() => router.push(`/post/${item.slug}`)}
                       href={`/post/${item.slug}`}
                       key={item.id}
@@ -117,7 +117,7 @@ const Navbar = ({ posts, menu }) => {
                       <span className='text-sm font-medium text-black truncate max-w-[200px]'>
                         {item.title}
                       </span>
-                    </Link>
+                    </a>
                   ))
                 ) : (
                   <div className='p-3 text-sm text-gray-500'>
@@ -208,12 +208,12 @@ const Navbar = ({ posts, menu }) => {
           <ul className='space-y-3'>
             {menu.map((link) => (
               <li key={link.name}>
-                <Link
+                <a
                   href={link.href}
                   className='block text-sm text-white hover:text-gray-300 transition'
                   onClick={() => setMenuOpen(false)}>
                   {link.name}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>

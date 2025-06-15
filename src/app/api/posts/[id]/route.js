@@ -4,11 +4,13 @@ import fs from 'fs';
 import path from 'path';
 import { promises as fsp } from 'fs';
 import { ObjectId } from 'mongodb';
-// import parseForm from '@/src/lib/parseForm';
 import formidable from 'formidable';
 import { Readable } from 'stream';
 
-async function parseForm(req, uploadDir) {
+const uploadDir = path.join(process.cwd(), 'uploads'); // ✅ outside /public
+await fsp.mkdir(uploadDir, { recursive: true });
+
+async function parseForm(req) {
   const form = formidable({
     uploadDir,
     keepExtensions: true,
@@ -23,7 +25,6 @@ async function parseForm(req, uploadDir) {
     form.parse(reqStream, (err, fields, files) => {
       if (err) return reject(err);
 
-      // ✅ Flatten field arrays
       const flatFields = {};
       for (const key in fields) {
         flatFields[key] = Array.isArray(fields[key]) ? fields[key][0] : fields[key];
@@ -40,7 +41,7 @@ export const config = {
   },
 };
 
-// GET post by id
+// GET post by ID
 export async function GET(_, { params }) {
   try {
     const client = await clientPromise;
@@ -58,7 +59,7 @@ export async function GET(_, { params }) {
   }
 }
 
-// DELETE post and its images
+// DELETE post and uploaded images
 export async function DELETE(_, { params }) {
   try {
     const client = await clientPromise;
@@ -69,9 +70,10 @@ export async function DELETE(_, { params }) {
       return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
 
-    const deleteFile = (relativePath) => {
-      if (relativePath) {
-        const fullPath = path.join(process.cwd(), 'public', relativePath);
+    const deleteFile = (urlPath) => {
+      if (urlPath?.startsWith('/api/uploads/')) {
+        const filename = urlPath.replace('/api/uploads/', '');
+        const fullPath = path.join(uploadDir, filename);
         if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
       }
     };
@@ -91,10 +93,8 @@ export async function DELETE(_, { params }) {
 // POST (update) post
 export async function POST(req, { params }) {
   const id = params.id;
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  await fsp.mkdir(uploadDir, { recursive: true });
 
-  const { fields, files } = await parseForm(req, uploadDir);
+  const { fields, files } = await parseForm(req);
 
   const {
     title,
@@ -113,8 +113,9 @@ export async function POST(req, { params }) {
 
   const newImage = files.image?.[0];
   const newOgImage = files.ogImage?.[0];
-  const imageUrl = newImage ? `/uploads/${path.basename(newImage.filepath)}` : null;
-  const ogImageUrl = newOgImage ? `/uploads/${path.basename(newOgImage.filepath)}` : null;
+
+  const imageUrl = newImage ? `/api/uploads/${path.basename(newImage.filepath)}` : null;
+  const ogImageUrl = newOgImage ? `/api/uploads/${path.basename(newOgImage.filepath)}` : null;
 
   try {
     const client = await clientPromise;
@@ -125,9 +126,12 @@ export async function POST(req, { params }) {
       return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
 
-    const deleteFile = (filePath) => {
-      const fullPath = path.join(process.cwd(), 'public', filePath);
-      if (filePath && fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    const deleteFile = (urlPath) => {
+      if (urlPath?.startsWith('/api/uploads/')) {
+        const filename = urlPath.replace('/api/uploads/', '');
+        const fullPath = path.join(uploadDir, filename);
+        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+      }
     };
 
     if (newImage && post.image) deleteFile(post.image);

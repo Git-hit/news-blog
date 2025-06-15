@@ -28,7 +28,7 @@ export async function GET() {
 
 // POST create a page
 export async function POST(req) {
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+  const uploadDir = path.join(process.cwd(), 'uploads');
   await fsp.mkdir(uploadDir, { recursive: true });
 
   const form = formidable({
@@ -60,8 +60,8 @@ export async function POST(req) {
 
     const image = files.image?.[0];
     const ogImage = files.ogImage?.[0];
-    const imageUrl = image ? `/uploads/${path.basename(image.filepath)}` : null;
-    const ogImageUrl = ogImage ? `/uploads/${path.basename(ogImage.filepath)}` : null;
+    const imageUrl = image ? `/api/uploads/${path.basename(image.filepath)}` : null;
+    const ogImageUrl = ogImage ? `/api/uploads/${path.basename(ogImage.filepath)}` : null;
 
     const client = await clientPromise;
     const db = client.db();
