@@ -9,7 +9,7 @@ export async function GET(_, { params }) {
   try {
     // console.log("Reading file from:", filePath);
     if (!fs.existsSync(filePath)) {
-      return new NextResponse("File not found", { status: 404 });
+      return new NextResponse("File not found. ", "Reading file from: ", filePath, "Process cwd: ", process.cwd(), { status: 404 });
     }
 
     const fileBuffer = fs.readFileSync(filePath);
