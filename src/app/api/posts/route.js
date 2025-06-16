@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/src/lib/mongodb';
-// import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
-import { promises as fsp } from 'fs';
+import { mkdir } from 'fs/promises';
+import { Readable } from 'stream';
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+const uploadDir = path.join(process.cwd(), 'uploads');
 
 // GET all posts (latest first)
 export async function GET() {
@@ -28,23 +30,36 @@ export async function GET() {
 }
 
 // POST new post
-export async function POST(req) {
-  const uploadDir = path.join(process.cwd(), 'uploads');
-  await fsp.mkdir(uploadDir, { recursive: true });
+async function parseForm(req) {
+  await mkdir(uploadDir, { recursive: true });
 
   const form = formidable({
     uploadDir,
     keepExtensions: true,
+    maxFileSize: 20 * 1024 * 1024, // 20 MB
     filename: (name, ext, part) => `${Date.now()}-${part.originalFilename}`,
   });
 
-  try {
-    const [fields, files] = await new Promise((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve([fields, files]);
-      });
+  const reqStream = Readable.fromWeb(req.body);
+  reqStream.headers = Object.fromEntries(req.headers.entries());
+
+  return new Promise((resolve, reject) => {
+    form.parse(reqStream, (err, fields, files) => {
+      if (err) return reject(err);
+
+      const flatFields = {};
+      for (const key in fields) {
+        flatFields[key] = Array.isArray(fields[key]) ? fields[key][0] : fields[key];
+      }
+
+      resolve({ fields: flatFields, files });
     });
+  });
+}
+
+export async function POST(req) {
+  try {
+    const { fields, files } = await parseForm(req);
 
     const {
       title,
@@ -64,8 +79,8 @@ export async function POST(req) {
     const image = files.image?.[0];
     const ogImage = files.ogImage?.[0];
 
-    const imageUrl = image ? `/api//uploads/${path.basename(image.filepath)}` : null;
-    const ogImageUrl = ogImage ? `/api//uploads/${path.basename(ogImage.filepath)}` : null;
+    const imageUrl = image ? `/api/uploads/${path.basename(image.filepath)}` : null;
+    const ogImageUrl = ogImage ? `/api/uploads/${path.basename(ogImage.filepath)}` : null;
 
     const client = await clientPromise;
     const db = client.db();

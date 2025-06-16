@@ -61,11 +61,12 @@ export default function PostsPage() {
   };
 
   const handleDelete = async () => {
+    console.log("Deleting ", deleteId);
     if (!deleteId) return;
     setDeleting(true);
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${deleteId}`);
-      setPosts(posts.filter((post) => post.id !== deleteId));
+      setPosts(posts.filter((post) => post._id !== deleteId));
       toast({ title: "Post deleted successfully." });
     } catch (err) {
       console.error("Delete failed", err);
@@ -96,7 +97,7 @@ export default function PostsPage() {
         <h1 className="text-3xl font-bold tracking-tight">📄 All Posts</h1>
         {(permissions.includes("create_edit_post") || localStorage.getItem("role") === "admin") && (
           <Link href="/admin/dashboard/posts/new">
-            <Button className="text-sm">+ New Post</Button>
+            <Button className="text-sm cursor-pointer">+ New Post</Button>
           </Link>
         )}
       </div>
@@ -141,7 +142,7 @@ export default function PostsPage() {
                         <Link
                           target="_blank"
                           href={`/post/${post.slug}`}
-                          className="text-blue-600 hover:underline text-sm"
+                          className="text-blue-600 hover:underline text-sm cursor-pointer"
                         >
                           View Live
                         </Link>
@@ -149,22 +150,22 @@ export default function PostsPage() {
                         <>
                           <Link
                             href={`/admin/dashboard/posts/edit/${post._id}`}
-                            className="text-yellow-600 hover:underline text-sm"
+                            className="text-yellow-600 hover:underline text-sm cursor-pointer"
                           >
                             Edit
                           </Link>
                           <Link
                             target="_blank"
                             href={`/post/${post.slug}`}
-                            className="text-blue-600 hover:underline text-sm"
+                            className="text-blue-600 hover:underline text-sm cursor-pointer"
                           >
                             View
                           </Link>
                           <Dialog>
                             <DialogTrigger asChild>
                               <button
-                                onClick={() => setDeleteId(post.id)}
-                                className="text-red-600 hover:underline text-sm"
+                                onClick={() => setDeleteId(post._id)}
+                                className="text-red-600 hover:underline text-sm cursor-pointer"
                               >
                                 Delete
                               </button>
@@ -184,6 +185,7 @@ export default function PostsPage() {
                                   Cancel
                                 </Button> */}
                                 <Button
+                                  className="cursor-pointer"
                                   variant="destructive"
                                   onClick={handleDelete}
                                   disabled={deleting}

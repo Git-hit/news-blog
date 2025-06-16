@@ -193,7 +193,7 @@ export default function HeaderMenuPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={addItem}>Add</Button>
+            <Button className="cursor-pointer" onClick={addItem}>Add</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

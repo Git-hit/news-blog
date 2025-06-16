@@ -71,7 +71,7 @@ export default function AllPages() {
       await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL}/api/pages/${deletingId}`
       );
-      setPages(pages.filter((page) => page.id !== deletingId));
+      setPages(pages.filter((page) => page._id !== deletingId));
       toast("Page deleted successfully.");
     } catch (err) {
       toast("Failed to delete page");
@@ -97,7 +97,7 @@ export default function AllPages() {
         <h1 className="text-3xl font-bold tracking-tight">📄 All Pages</h1>
         {(permissions.includes("create_edit_page") || role === "admin") && (
             <Link href="/admin/dashboard/pages/new">
-              <Button className="text-sm">+ New Page</Button>
+              <Button className="text-sm cursor-pointer">+ New Page</Button>
             </Link>
           )}
       </div>
@@ -150,7 +150,7 @@ export default function AllPages() {
                         <Link
                           target="_blank"
                           href={`/${page.slug}`}
-                          className="text-blue-600 hover:underline text-sm"
+                          className="text-blue-600 hover:underline text-sm cursor-pointer"
                         >
                           View Live
                         </Link>
@@ -158,14 +158,14 @@ export default function AllPages() {
                         <>
                           <Link
                             href={`/admin/dashboard/pages/edit/${page._id}`}
-                            className="text-yellow-600 hover:underline text-sm"
+                            className="text-yellow-600 hover:underline text-sm cursor-pointer"
                           >
                             Edit
                           </Link>
                           <Link
                             target="_blank"
                             href={`/${page.slug}`}
-                            className="text-blue-600 hover:underline text-sm"
+                            className="text-blue-600 hover:underline text-sm cursor-pointer"
                           >
                             View
                           </Link>
@@ -177,10 +177,10 @@ export default function AllPages() {
                           </button> */}
                           <button
                             onClick={() => {
-                              setDeletingId(page.id);
+                              setDeletingId(page._id);
                               setOpenDialog(true);
                             }}
-                            className="text-red-600 hover:underline text-sm"
+                            className="text-red-600 hover:underline text-sm cursor-pointer"
                           >
                             Delete
                           </button>
@@ -204,10 +204,10 @@ export default function AllPages() {
             page?
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenDialog(false)}>
+            <Button className="cursor-pointer" variant="outline" onClick={() => setOpenDialog(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={deletePage}>
+            <Button className="cursor-pointer" variant="destructive" onClick={deletePage}>
               Delete
             </Button>
           </DialogFooter>

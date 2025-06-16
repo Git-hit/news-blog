@@ -1,8 +1,9 @@
+import path from 'path';
+import { mkdir } from 'fs/promises';
+import { Readable } from 'stream';
+import formidable from 'formidable';
 import { NextResponse } from 'next/server';
 import clientPromise from '@/src/lib/mongodb';
-import formidable from 'formidable';
-import path from 'path';
-import { promises as fsp } from 'fs';
 
 export const config = {
   api: {
@@ -10,7 +11,35 @@ export const config = {
   },
 };
 
-// GET all pages
+const uploadDir = path.join(process.cwd(), 'uploads');
+
+async function parseForm(req) {
+  await mkdir(uploadDir, { recursive: true });
+
+  const form = formidable({
+    uploadDir,
+    keepExtensions: true,
+    maxFileSize: 20 * 1024 * 1024,
+    filename: (name, ext, part) => `${Date.now()}-${part.originalFilename}`,
+  });
+
+  const reqStream = Readable.fromWeb(req.body);
+  reqStream.headers = Object.fromEntries(req.headers.entries());
+
+  return new Promise((resolve, reject) => {
+    form.parse(reqStream, (err, fields, files) => {
+      if (err) return reject(err);
+
+      const flatFields = {};
+      for (const key in fields) {
+        flatFields[key] = Array.isArray(fields[key]) ? fields[key][0] : fields[key];
+      }
+
+      resolve({ fields: flatFields, files });
+    });
+  });
+}
+
 export async function GET() {
   try {
     const client = await clientPromise;
@@ -26,24 +55,9 @@ export async function GET() {
   }
 }
 
-// POST create a page
 export async function POST(req) {
-  const uploadDir = path.join(process.cwd(), 'uploads');
-  await fsp.mkdir(uploadDir, { recursive: true });
-
-  const form = formidable({
-    uploadDir,
-    keepExtensions: true,
-    filename: (name, ext, part) => `${Date.now()}-${part.originalFilename}`,
-  });
-
   try {
-    const [fields, files] = await new Promise((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve([fields, files]);
-      });
-    });
+    const { fields, files } = await parseForm(req);
 
     const {
       title,
@@ -60,6 +74,7 @@ export async function POST(req) {
 
     const image = files.image?.[0];
     const ogImage = files.ogImage?.[0];
+
     const imageUrl = image ? `/api/uploads/${path.basename(image.filepath)}` : null;
     const ogImageUrl = ogImage ? `/api/uploads/${path.basename(ogImage.filepath)}` : null;
 
@@ -67,7 +82,6 @@ export async function POST(req) {
     const db = client.db();
     const pagesCollection = db.collection('pages');
 
-    // Manually generate integer ID if needed (optional)
     const last = await pagesCollection.find().sort({ id: -1 }).limit(1).next();
     const newId = last ? last.id + 1 : 1;
 
