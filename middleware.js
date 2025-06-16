@@ -6,7 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export function middleware(request) {
   const url = request.nextUrl.clone();
 
-  // Token from header or cookie (you can adapt this)
   const token = request.headers.get("authorization")?.replace("Bearer ", "") || request.cookies.get("token")?.value;
 
   // If token not found, redirect to login
