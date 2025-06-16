@@ -26,6 +26,6 @@ export function middleware(request) {
   }
 }
 
-// export const config = {
-//   matcher: ['/admin/:path*'], // Only match admin routes
-// };
+export const config = {
+  matcher: ['/admin/:path*'], // Only match admin routes
+};
