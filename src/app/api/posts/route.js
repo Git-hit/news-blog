@@ -14,15 +14,47 @@ export const config = {
 const uploadDir = path.join(process.cwd(), 'uploads');
 
 // GET all posts (latest first)
-export async function GET() {
+export async function GET(req) {
   try {
     const client = await clientPromise;
     const db = client.db();
     const postsCollection = db.collection('posts');
 
-    const posts = await postsCollection.find({}).sort({ created_at: -1 }).toArray();
+    const { searchParams } = new URL(req.url);
+    const limit = parseInt(searchParams.get('limit')) || 0;
+    const page = parseInt(searchParams.get('page')) || 1;
+    const onlyMetadata = searchParams.get('only_metadata') === 'true';
 
-    return NextResponse.json(posts);
+    const query = {};
+    const sort = { created_at: -1 };
+
+    let cursor = postsCollection.find(query).sort(sort);
+
+    if (onlyMetadata) {
+      cursor = cursor.project({
+        _id: 1,
+        title: 1,
+        slug: 1,
+        featured: 1,
+        views: 1,
+      });
+    }
+
+    const total = await postsCollection.countDocuments(query);
+
+    if (limit > 0) {
+      cursor = cursor.skip((page - 1) * limit).limit(limit);
+    }
+
+    const posts = await cursor.toArray();
+
+    return NextResponse.json({
+      posts,
+      total,
+      page,
+      limit,
+      totalPages: limit > 0 ? Math.ceil(total / limit) : 1,
+    });
   } catch (err) {
     console.error('Error fetching posts:', err);
     return NextResponse.json({ message: 'Failed to fetch posts' }, { status: 500 });
