@@ -18,6 +18,7 @@ export async function generateMetadata({ params }) {
   const { post } = await res.json();
 
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL),
     title: post.meta_title || post.title,
     description: post.meta_description,
     openGraph: {
