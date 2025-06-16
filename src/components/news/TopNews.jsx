@@ -1,22 +1,20 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { Clock } from "lucide-react";
 import { DateTime } from "luxon";
-import { useRouter } from "next/navigation";
 
 const normalize = (str) =>
   str.toLowerCase().replace(/-/g, " ").replace(/\s+/g, " ").trim();
 
 const TopNews = ({ topNewsData, category }) => {
-  const router = useRouter();
+  // console.log(topNewsData, category);
   const normalizedCategory = normalize(category);
 
   // Filter by category
   const categoryFiltered = topNewsData
     .filter((item) => {
       try {
-        const categoriesArray = JSON.parse(item.categories);
+        const categoriesArray = item.categories;
         return categoriesArray.some(
           (cat) => normalize(cat) === normalizedCategory
         );
@@ -43,7 +41,7 @@ const TopNews = ({ topNewsData, category }) => {
   }
 
   const [mainStory, ...rest] = finalPosts;
-  const sideStories = rest.slice(0, 4);
+  const sideStories = rest.slice(0, 3);
 
   const formatPosted = (dateString) => {
     if (!dateString) return "";
@@ -59,7 +57,7 @@ const TopNews = ({ topNewsData, category }) => {
     <section className="max-w-6xl mx-auto px-4 py-10">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold capitalize">{category.replace(/-/g, " ")}</h2>
+        <h2 className="text-2xl font-bold capitalize">Featured in {category.replace(/-/g, " ")}</h2>
         {/* <a href="#" className="text-sm text-red-600 font-medium hover:underline">
           See all →
         </a> */}

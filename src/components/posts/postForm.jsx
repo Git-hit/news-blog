@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import PostEditor from "./postEditor";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import SeoSidebar from "./seoSettingsSidebar";
 import analyzeSeo from "./analyzeSeo";
 import axios from "axios";
@@ -38,9 +37,8 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
   const imagePreviewUrl = image instanceof File ? URL.createObjectURL(image) : image || "";
   const ogImagePreviewUrl = ogImage instanceof File ? URL.createObjectURL(ogImage) : ogImage || "";
 
-  const router = useRouter();
-
   const handleCategoryChange = (updatedIds) => {
+    // console.log(updatedIds);
     setSelectedCategories(updatedIds);
   };
 
@@ -50,7 +48,8 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
 
   useEffect(() => {
     let parsedCategories = initialData.categories;
-
+  
+    // Already an array? Use directly.
     if (typeof parsedCategories === "string") {
       try {
         parsedCategories = JSON.parse(parsedCategories);
@@ -58,18 +57,19 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
         parsedCategories = [];
       }
     }
-
+  
     if (Array.isArray(parsedCategories) && categories.length > 0) {
-      const mappedIndexes = parsedCategories
+      // Get the category IDs (or index + 1) matching the names from DB
+      const mappedIds = parsedCategories
         .map((catName) => {
-          const index = categories.findIndex((c) => c.name === catName);
-          return index !== -1 ? index + 1 : null;
+          const match = categories.find((c) => c.name === catName);
+          return match?.id ?? null;
         })
-        .filter((i) => i !== null);
-
-      setSelectedCategories(mappedIndexes);
+        .filter((id) => id !== null);
+  
+      setSelectedCategories(mappedIds); // <- assuming selectedCategories stores IDs
     }
-  }, [initialData.categories, categories]);
+  }, [initialData.categories, categories]);  
 
   useEffect(() => {
     const setMeta = (property, content) => {
@@ -205,12 +205,22 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
       formData.append("ogImage", ogImage);
       formData.append("featured", isFeatured);
 
-      selectedCategories.forEach((index) => {
-        const category = categories[index - 1];
-        if (category) {
-          formData.append("categories[]", category.name);
-        }
-      });
+      // console.log(selectedCategories)
+      // selectedCategories.forEach((index) => {
+      //   const category = categories.find(cat => cat.id === index);
+      //   console.log(category.name);
+      //   // console.log(index, categories[index - 1], categories)
+      //   if (category) {
+      //     formData.append("categories[]", category.name);
+      //   }
+      // });
+
+      formData.append("categories", JSON.stringify(
+        selectedCategories.map(index => {
+          const category = categories.find(cat => cat.id === index);
+          return category?.name;
+        }).filter(Boolean)
+      ));
 
       const url = isEdit
         ? `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}`

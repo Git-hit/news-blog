@@ -32,11 +32,6 @@ export default function CategorySelector({
     onChange(selectedCategories.filter((catId) => catId !== id));
   };
 
-  useEffect(() => {
-    axios.defaults.withCredentials = true;
-    axios.defaults.withXSRFToken = true;
-  }, []);
-
   // ➕ Create category
   const handleCreateCategory = async () => {
     if (!newCategory.trim()) return;

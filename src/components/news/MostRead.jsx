@@ -3,19 +3,17 @@
 import React from "react";
 import Image from "next/image";
 import { DateTime } from "luxon";
-import { useRouter } from "next/navigation";
 
 const normalize = (str) =>
   str.toLowerCase().replace(/-/g, " ").replace(/\s+/g, " ").trim();
 
 const MostRead = ({ mostReadData, category }) => {
-  const router = useRouter();
   const normalizedCategory = normalize(category);
 
   // Filter by category
   const filtered = mostReadData.filter((item) => {
     try {
-      const cats = JSON.parse(item.categories);
+      const cats = item.categories;
       if (Array.isArray(cats)) {
         return cats.some((cat) => normalize(cat) === normalizedCategory);
       }
@@ -63,7 +61,7 @@ const MostRead = ({ mostReadData, category }) => {
   return (
     <section className="max-w-7xl mx-auto px-4 py-10">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-gray-900">Most Read</h2>
+        <h2 className="text-2xl font-semibold text-gray-900">Must Read</h2>
         {/* <button className="text-red-500 text-sm font-medium hover:underline">
           See all
         </button> */}
@@ -76,12 +74,12 @@ const MostRead = ({ mostReadData, category }) => {
           className="cursor-pointer bg-white rounded-xl shadow overflow-hidden flex flex-col md:flex-row"
         >
           <a href={`/post/${mainStory.slug}`}>
-            <Image
+            <img
               src={`${mainStory.image}`}
               alt={mainStory.title}
-              width={400}
-              height={250}
-              className="object-cover w-full md:w-1/2 h-60 md:h-auto"
+              // width={400}
+              // height={250}
+              className="object-cover w-full md:h-auto"
             />
             <div className="p-4 flex flex-col justify-between">
               <div>
@@ -121,7 +119,7 @@ const MostRead = ({ mostReadData, category }) => {
 
         {/* Side Articles */}
         <div className="space-y-4">
-          {sideStories.map((item) => (
+          {sideStories.slice(0, 3).map((item) => (
             <div
               // onClick={() => router.push(`/post/${item.slug}`)}
               key={item.id}

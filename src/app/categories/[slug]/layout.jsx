@@ -20,7 +20,7 @@ export default function Layout() {
       setLoading(true);
       try {
         const [newsRes, menuRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news?category=${slug}`),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/menu`),
         ]);
 

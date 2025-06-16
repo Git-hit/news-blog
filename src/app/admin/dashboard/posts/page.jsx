@@ -147,7 +147,7 @@ export default function PostsPage() {
                       <TableCell className="font-medium">{post.title}</TableCell>
                       <TableCell>{post.views ?? 0}</TableCell>
                       <TableCell>
-                        {post.featured === 1 ? (
+                        {post.featured === true ? (
                           <span className="text-green-600 font-semibold">Yes</span>
                         ) : (
                           <span className="text-gray-500">No</span>

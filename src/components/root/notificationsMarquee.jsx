@@ -1,12 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 
-export default function NotificationsMarquee({ notifications, router }) {
+export default function NotificationsMarquee({ notifications }) {
   const marqueeRef = useRef(null);
   const [scrollWidth, setScrollWidth] = useState(0);
 
   useEffect(() => {
     if (marqueeRef.current) {
-      setScrollWidth(marqueeRef.current.scrollWidth);
+      setScrollWidth(marqueeRef.current.scrollWidth / 2); // width of one set
     }
   }, [notifications]);
 
@@ -14,11 +14,11 @@ export default function NotificationsMarquee({ notifications, router }) {
     <>
       <style jsx>{`
         @keyframes marquee {
-          from {
-            transform: translateX(600%);
+          0% {
+            transform: translateX(0%);
           }
-          to {
-            transform: translateX(calc(-${scrollWidth}px));
+          100% {
+            transform: translateX(-50%);
           }
         }
       `}</style>
@@ -31,16 +31,16 @@ export default function NotificationsMarquee({ notifications, router }) {
         <div className="pl-32 overflow-hidden whitespace-nowrap">
           <div
             ref={marqueeRef}
-            className="inline-block"
+            className="inline-flex"
             style={{
               animation: scrollWidth
-                ? `marquee ${scrollWidth / 10}s linear infinite` // duration proportional to length
+                ? `marquee ${scrollWidth / 125}s linear infinite`
                 : "none",
             }}
           >
-            {notifications.map((item, idx) => (
+            {/* Duplicate the items to create a loop */}
+            {[...notifications, ...notifications].map((item, idx) => (
               <a
-                // onClick={() => router.push(item.link)}
                 href={item.link}
                 key={`${item.id}-${idx}`}
                 className="inline-flex items-center space-x-3 mr-10 text-sm cursor-pointer"

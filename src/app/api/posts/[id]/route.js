@@ -25,6 +25,8 @@ async function parseForm(req) {
     form.parse(reqStream, (err, fields, files) => {
       if (err) return reject(err);
 
+      // console.log(fields);
+
       const flatFields = {};
       for (const key in fields) {
         flatFields[key] = Array.isArray(fields[key]) ? fields[key][0] : fields[key];
@@ -92,7 +94,7 @@ export async function DELETE(_, { params }) {
 
 // POST (update) post
 export async function POST(req, { params }) {
-  const id = params.id;
+  const { id } = await params;
 
   const { fields, files } = await parseForm(req);
 
@@ -110,6 +112,8 @@ export async function POST(req, { params }) {
     ogDescription,
     featured,
   } = fields;
+
+  // console.log(fields.categories);
 
   const newImage = files.image?.[0];
   const newOgImage = files.ogImage?.[0];

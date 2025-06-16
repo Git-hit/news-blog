@@ -13,7 +13,7 @@ const MoreToExplore = ({ exploreData, category }) => {
   const router = useRouter();
   const filtered = exploreData.filter((item) => {
     try {
-      const parsed = JSON.parse(item.categories);
+      const parsed = item.categories;
       return parsed.some((cat) => slugify(cat) === category.toLowerCase());
     } catch (e) {
       return false;
