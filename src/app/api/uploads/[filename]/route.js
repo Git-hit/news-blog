@@ -7,6 +7,7 @@ export async function GET(_, { params }) {
   const filePath = path.join(process.cwd(), "uploads", filename);
 
   try {
+    console.log("Reading file from:", filePath);
     if (!fs.existsSync(filePath)) {
       return new NextResponse("File not found", { status: 404 });
     }
