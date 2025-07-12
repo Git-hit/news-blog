@@ -61,7 +61,7 @@ export default function CategorySelector({
       {/* Selected tags */}
       <div className="flex flex-wrap gap-2 mb-2">
         {selectedCategories.map((catId) => {
-          const cat = categories.find((c) => c.id === catId);
+          const cat = categories.find((c) => c._id === catId);
           return (
             <span
               key={catId}

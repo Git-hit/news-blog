@@ -48,7 +48,7 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
 
   useEffect(() => {
     let parsedCategories = initialData.categories;
-  
+    
     // Already an array? Use directly.
     if (typeof parsedCategories === "string") {
       try {
@@ -57,17 +57,20 @@ export default function PostForm({ initialData = {}, isEdit = false, postId }) {
         parsedCategories = [];
       }
     }
+    
+    // console.log(parsedCategories);
   
     if (Array.isArray(parsedCategories) && categories.length > 0) {
-      // Get the category IDs (or index + 1) matching the names from DB
       const mappedIds = parsedCategories
         .map((catName) => {
           const match = categories.find((c) => c.name === catName);
-          return match?.id ?? null;
+          return match?._id ?? null;
         })
         .filter((id) => id !== null);
+
+        // console.log(categories, mappedIds);
   
-      setSelectedCategories(mappedIds); // <- assuming selectedCategories stores IDs
+      setSelectedCategories(mappedIds);
     }
   }, [initialData.categories, categories]);  
 

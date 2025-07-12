@@ -38,6 +38,7 @@ import {
   Settings,
   StickyNote,
   User,
+  UserRoundPen,
   Users,
 } from "lucide-react";
 
@@ -89,6 +90,16 @@ const allNavItems = [
     key: "users", 
     icon: Users 
   },
+  { title: "Authors pages", 
+    url: "/admin/dashboard/authors-pages", 
+    key: "authors-pages", 
+    icon: UserRoundPen,
+  },
+  { title: "My author page", 
+    url: "/admin/dashboard/my-author-page", 
+    key: "my-author-page", 
+    icon: UserRoundPen,
+  },
   {
     title: "Settings",
     url: "/admin/dashboard/settings",
@@ -133,7 +144,7 @@ export default function DashboardLayout({ children }) {
     let allowed = ["dashboard"];
 
     if (role === "admin") {
-      allowed = allNavItems.map((item) => item.key);
+      allowed = allNavItems.map((item) => item.key).filter(key => key !== "my-author-page");
     } else if (role === "user") {
       if (
         permissions.includes("create_edit_post") ||
@@ -147,7 +158,10 @@ export default function DashboardLayout({ children }) {
       if (permissions.includes("manage_notifications")) {
         allowed.push("notifications");
       }
+      allowed.push("my-author-page");
     }
+
+    // console.log(allowed)
 
     setFilteredItems(allNavItems.filter((item) => allowed.includes(item.key)));
   }, []);

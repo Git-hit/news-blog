@@ -28,6 +28,8 @@ export default function AdminLogin() {
     // 💾 Save to localStorage if needed
     localStorage.setItem('role', user.role);
     localStorage.setItem('permissions', JSON.stringify(user.permissions));
+    localStorage.setItem('email', user.email);
+    localStorage.setItem('name', user.name);
 
     // console.log("Logged in as:", user.role);
     // console.log("Permissions:", user.permissions);
